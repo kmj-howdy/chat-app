@@ -43,10 +43,7 @@ const Main = () => {
       {/* TODO: 새로운 채팅화면 */}
       <StyledChatScreen
         chatId={selectedChat?.chat_id ?? '1'}
-        chatModel={{
-          chat_model_id: selectedChat?.chat_model_id,
-          chat_model_name: selectedChat?.chat_model_name,
-        }}
+        chatModel={selectedChat?.chat_model_id ?? ''}
       />
     </Container>
   );

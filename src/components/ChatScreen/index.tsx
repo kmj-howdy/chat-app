@@ -1,12 +1,12 @@
 import { PropsWithClassName } from '@/types/style';
 import styled from 'styled-components';
-import SelectBox, { SelectOption } from '../common/SelectBox';
-import { Chat, ChatModels, Dialogue } from '@/types/chat';
+import { Chat, Dialogue } from '@/types/chat';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import useQuery from '@/hooks/useQuery';
 import { v4 as uuidv4 } from 'uuid';
 import request from '@/utils/request';
 import ChatContent from './ChatContent';
+import ChatModelSelectBox from './ChatModelSelectBox';
 
 const Container = styled.div`
   padding: 2rem;
@@ -21,24 +21,17 @@ const StyledTextarea = styled.textarea`
   flex-grow: 1;
 `;
 
-const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
-  return models.map((model) => ({
-    value: model.chat_model_id,
-    label: model.chat_model_name,
-  }));
-};
-
 type ChatScreenProps = {
   chatId: string;
-  chatModel: Partial<ChatModels>;
+  chatModel: string;
 };
 
 const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScreenProps>) => {
   const { data: initialChatContent } = useQuery<Chat>(`/chats/${chatId}`, {
     deps: [chatId],
   });
-  const { data: chatModels } = useQuery<ChatModels[]>('/chat_model');
 
+  const [selectedChatModel, setSelectedChatModel] = useState(chatModel);
   const [chatContent, setChatContent] = useState<Chat | null>(null);
   const [value, setValue] = useState('');
 
@@ -49,8 +42,7 @@ const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScr
   }, [initialChatContent]);
 
   const handleSelectChange = (value: string) => {
-    // TODO: 값 업데이트
-    console.log('선택된 모델 id:', value);
+    setSelectedChatModel(value);
   };
 
   const onSubmit: MouseEventHandler = (e) => {
@@ -104,13 +96,7 @@ const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScr
 
   return (
     <Container className={className}>
-      {chatModels && (
-        <SelectBox
-          placeholder="모델을 선택해주세요"
-          options={convertChatModelsToOptions(chatModels)}
-          onChange={handleSelectChange}
-        />
-      )}
+      <ChatModelSelectBox value={selectedChatModel} onChange={handleSelectChange} />
       <ChatContent key={chatId} chatContent={chatContent} />
       <InputWrapper>
         <StyledTextarea

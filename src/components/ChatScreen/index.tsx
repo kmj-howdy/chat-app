@@ -1,7 +1,7 @@
 import { PropsWithClassName } from '@/types/style';
 
 import styled, { css } from 'styled-components';
-import SelectBox, { SelectOption } from './common/SelectBox';
+import SelectBox, { SelectOption } from '../common/SelectBox';
 import { Chat, ChatModels } from '@/types/chat';
 import { MouseEventHandler } from 'react';
 import useQuery from '@/hooks/useQuery';
@@ -69,11 +69,11 @@ const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
   }));
 };
 
-type ChatUIProps = {
+type ChatScreenProps = {
   chatId: string;
 };
 
-const ChatUI = ({ className, chatId }: PropsWithClassName<ChatUIProps>) => {
+const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) => {
   const { data: chatContent } = useQuery<Chat>(`/chats/${chatId}`, {
     deps: [chatId],
   });
@@ -117,4 +117,4 @@ const ChatUI = ({ className, chatId }: PropsWithClassName<ChatUIProps>) => {
   );
 };
 
-export default ChatUI;
+export default ChatScreen;

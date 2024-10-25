@@ -1,4 +1,4 @@
-import Chat from '@/components/Chat';
+import ChatScreen from '@/components/ChatScreen';
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 
@@ -14,7 +14,7 @@ const StyledChatList = styled(ChatList)`
   border: 1px solid red;
 `;
 
-const StyledChat = styled(Chat)`
+const StyledChatScreen = styled(ChatScreen)`
   min-width: 70%;
   border: 1px solid blue;
 `;
@@ -24,7 +24,7 @@ const Main = () => {
     <Container>
       <StyledChatList />
       {/* TODO: chatId 수정 */}
-      <StyledChat chatId="1" />
+      <StyledChatScreen chatId="1" />
     </Container>
   );
 };

@@ -2,9 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import styled from 'styled-components';
 import ChatContent from './ChatContent';
 import { useState, MouseEventHandler, useEffect, useRef } from 'react';
-import request from '@/utils/request';
 import { Chat, Dialogue } from '@/types/chat';
-import { updateChatContent } from '@/apis/chatting';
+import { createChat, updateChatContent } from '@/apis/chatting';
 
 const InputWrapper = styled.div`
   display: flex;
@@ -68,7 +67,7 @@ const ChattingArea = ({
         }
       } else {
         // 새로운 채팅 (채팅 및 대화 생성)
-        const createdChatData = await createChat();
+        const createdChatData = await createChat({ selectedChatModelId });
         if (createdChatData) {
           const updatedChat: Chat = {
             ...createdChatData,
@@ -86,19 +85,6 @@ const ChattingArea = ({
       }
     } finally {
       isCreatingRef.current = false;
-    }
-  };
-
-  const createChat = async () => {
-    try {
-      const createdChat = await request.post<Chat[]>('/chats', {
-        body: JSON.stringify({
-          chat_model_id: selectedChatModelId,
-        }),
-      });
-      return createdChat[createdChat.length - 1];
-    } catch (error) {
-      console.error(error);
     }
   };
 

@@ -66,6 +66,11 @@ const Main = () => {
     });
   };
 
+  const handleNewChat = () => {
+    setSelectedChat(undefined);
+    setSelectedChatModelId(chatModels?.[0].chat_model_id ?? '');
+  };
+
   const handleSelectModelChange = (modelId: string) => {
     setSelectedChatModelId(modelId);
     setSelectedChat(undefined);
@@ -77,6 +82,7 @@ const Main = () => {
         chatsData={chatsData}
         selectedChat={selectedChat}
         onSelectChat={updateSelectedChat}
+        onClickNewButton={handleNewChat}
       />
       <StyledChatScreen
         selectedChat={selectedChat}

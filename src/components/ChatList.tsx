@@ -55,18 +55,16 @@ type ChatListProps = {
   chatsData?: Chat[];
   selectedChat?: Chat;
   onSelectChat: (chatId?: Chat) => void;
+  onClickNewButton: () => void;
 };
 
 const ChatList = ({
   chatsData,
   selectedChat,
   onSelectChat,
+  onClickNewButton,
   className,
 }: PropsWithClassName<ChatListProps>) => {
-  const onClickNewButton = () => {
-    onSelectChat(undefined);
-  };
-
   const onClickChatItem = (chat: Chat) => {
     onSelectChat(chat);
   };
@@ -84,7 +82,7 @@ const ChatList = ({
               $isSelected={item.chat_id === selectedChat?.chat_id}
               onClick={() => onClickChatItem(item)}
             >
-              <ChatFirstQuestion>{item.dialogues[0].completion}</ChatFirstQuestion>
+              <ChatFirstQuestion>{item.dialogues[0].prompt}</ChatFirstQuestion>
               <ChatModelName>{item.chat_model_name}</ChatModelName>
             </ChatItem>
           );

@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { ClassName } from '@/types/style';
-import { CHATS } from '@/mock/data';
+import { useEffect, useState } from 'react';
+import request from '@/utils/request';
+import { Chat } from '@/types/chat';
 
 const Container = styled.div`
   display: flex;
@@ -52,8 +54,19 @@ const ChatModelName = styled.span`
 `;
 
 const ChatList = ({ className }: ClassName) => {
-  // TODO: 대화목록 불러오기
-  const chatsData = CHATS;
+  const [chatsData, setChatsData] = useState<Chat[]>([]);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const result = await request.get<Chat[]>('/chats');
+        setChatsData(result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchChats();
+  }, []);
 
   const onClickNewButton = () => {
     // TODO: 우측 채팅내역 초기화 및 현재 선택된 채팅 비활성화
@@ -69,7 +82,7 @@ const ChatList = ({ className }: ClassName) => {
         <CrateChatButton onClick={onClickNewButton}>New</CrateChatButton>
       </ButtonWrapper>
       <ChatListWrapper>
-        {chatsData.map((item) => {
+        {chatsData?.map((item) => {
           return (
             <ChatItem key={item.chat_id} $isSelected={false} onClick={onClickChatItem}>
               <ChatFirstQuestion>{item.dialogues[0].completion}</ChatFirstQuestion>

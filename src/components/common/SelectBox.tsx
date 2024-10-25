@@ -1,26 +1,23 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent } from 'react';
 
 export type SelectOption = { value: string; label: string };
 
-type SelectBoxProps = {
+export type SelectBoxProps = {
   options: SelectOption[];
+  value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
 };
 
-const SelectBox = ({ options, onChange, placeholder }: SelectBoxProps) => {
-  const [selectedValue, setSelectedValue] = useState<string>();
-
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    setSelectedValue(value);
-    onChange(value);
+const SelectBox = ({ options, value = '', onChange, placeholder }: SelectBoxProps) => {
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    onChange(e.target.value);
   };
 
   return (
-    <select value={selectedValue} onChange={handleChange}>
+    <select value={value} onChange={handleChange}>
       {placeholder && (
-        <option value="" disabled selected hidden>
+        <option value="" disabled hidden>
           {placeholder}
         </option>
       )}

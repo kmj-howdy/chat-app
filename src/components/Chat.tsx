@@ -3,8 +3,8 @@ import { PropsWithClassName } from '@/types/style';
 import styled, { css } from 'styled-components';
 import SelectBox, { SelectOption } from './common/SelectBox';
 import { Chat, ChatModels } from '@/types/chat';
-import { MouseEventHandler, useEffect, useState } from 'react';
-import request from '@/utils/request';
+import { MouseEventHandler } from 'react';
+import useQuery from '@/hooks/useQuery';
 
 const Container = styled.div`
   padding: 2rem;
@@ -74,32 +74,10 @@ type ChatUIProps = {
 };
 
 const ChatUI = ({ className, chatId }: PropsWithClassName<ChatUIProps>) => {
-  const [chatContent, setChatContent] = useState<Chat>();
-  const [chatModels, setChatModels] = useState<ChatModels[]>([]);
-
-  useEffect(() => {
-    const fetchChatModels = async () => {
-      try {
-        const result = await request.get<ChatModels[]>('/chat_model');
-        setChatModels(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchChatModels();
-  }, []);
-
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const result = await request.get<Chat>(`/chats/${chatId}`);
-        setChatContent(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchChats();
-  }, [chatId]);
+  const { data: chatContent } = useQuery<Chat>(`/chats/${chatId}`, {
+    deps: [chatId],
+  });
+  const { data: chatModels } = useQuery<ChatModels[]>('/chat_model');
 
   const handleSelectChange = (value: string) => {
     // TODO: 값 업데이트
@@ -117,11 +95,13 @@ const ChatUI = ({ className, chatId }: PropsWithClassName<ChatUIProps>) => {
 
   return (
     <Container className={className}>
-      <SelectBox
-        placeholder="모델을 선택해주세요"
-        options={convertChatModelsToOptions(chatModels)}
-        onChange={handleSelectChange}
-      />
+      {chatModels && (
+        <SelectBox
+          placeholder="모델을 선택해주세요"
+          options={convertChatModelsToOptions(chatModels)}
+          onChange={handleSelectChange}
+        />
+      )}
       <ChatWrapper>
         {chatContent?.dialogues.map((dialogue) => {
           // TODO: 대화 주체 분기처리

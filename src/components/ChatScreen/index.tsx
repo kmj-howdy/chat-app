@@ -1,58 +1,15 @@
 import { PropsWithClassName } from '@/types/style';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import SelectBox, { SelectOption } from '../common/SelectBox';
 import { Chat, ChatModels, Dialogue } from '@/types/chat';
-import { Fragment, MouseEventHandler, useEffect, useState } from 'react';
+import { MouseEventHandler, useEffect, useState } from 'react';
 import useQuery from '@/hooks/useQuery';
 import { v4 as uuidv4 } from 'uuid';
 import request from '@/utils/request';
+import ChatContent from './ChatContent';
 
 const Container = styled.div`
   padding: 2rem;
-`;
-
-const ChatWrapper = styled.div`
-  position: relative;
-  overflow-y: auto;
-  border: 1px solid grey;
-  height: 90%;
-  padding: 1rem;
-
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const chatMessageStyle = css`
-  box-sizing: border-box;
-  padding: 0.5rem 1rem;
-  border-radius: 1.125rem 1.125rem 1.125rem 0;
-  min-height: 2.25rem;
-  width: fit-content;
-  max-width: 66%;
-`;
-
-const UserMessage = styled.div`
-  ${chatMessageStyle};
-  margin: 1rem 0 0 auto;
-  border-radius: 1.125rem 1.125rem 0 1.125rem;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  background-color: ${(p) => p.theme.colors.secondary};
-`;
-
-const AiMessage = styled.div`
-  ${chatMessageStyle};
-  margin: 1rem auto 0 0;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-`;
-
-const GoDownButton = styled.button`
-  position: absolute;
-  left: 50%;
-  bottom: 2rem;
-  transform: translateX(-50%);
 `;
 
 const InputWrapper = styled.div`
@@ -81,22 +38,18 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
   });
   const { data: chatModels } = useQuery<ChatModels[]>('/chat_model');
 
-  const [localChatContent, setLocalChatContent] = useState<Chat | null>(null);
+  const [chatContent, setChatContent] = useState<Chat | null>(null);
   const [value, setValue] = useState('');
 
   useEffect(() => {
     if (initialChatContent) {
-      setLocalChatContent(initialChatContent);
+      setChatContent(initialChatContent);
     }
   }, [initialChatContent]);
 
   const handleSelectChange = (value: string) => {
     // TODO: 값 업데이트
     console.log('선택된 모델 id:', value);
-  };
-
-  const onScrollBottom = () => {
-    // TODO: 최하단으로 스크롤 구현
   };
 
   const onSubmit: MouseEventHandler = (e) => {
@@ -110,7 +63,7 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
       prompt: value,
       completion: '',
     };
-    setLocalChatContent((prevContent) =>
+    setChatContent((prevContent) =>
       prevContent ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] } : null,
     );
 
@@ -131,7 +84,7 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
         body: JSON.stringify({ prompt: value }),
       });
 
-      setLocalChatContent((prevContent) =>
+      setChatContent((prevContent) =>
         prevContent
           ? {
               ...prevContent,
@@ -157,17 +110,7 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
           onChange={handleSelectChange}
         />
       )}
-      <ChatWrapper>
-        {localChatContent?.dialogues.map((dialogue) => {
-          return (
-            <Fragment key={dialogue.dialogue_id}>
-              <UserMessage>{dialogue.prompt}</UserMessage>
-              <AiMessage>{dialogue.completion || '입력중...'}</AiMessage>
-            </Fragment>
-          );
-        })}
-        <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>
-      </ChatWrapper>
+      <ChatContent key={chatId} chatContent={chatContent} />
       <InputWrapper>
         <StyledTextarea
           rows={3}

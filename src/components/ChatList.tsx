@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { ClassName } from '@/types/style';
+import { PropsWithClassName } from '@/types/style';
 import { Chat } from '@/types/chat';
-import useQuery from '@/hooks/useQuery';
 
 const Container = styled.div`
   display: flex;
@@ -52,15 +51,24 @@ const ChatModelName = styled.span`
   color: gray;
 `;
 
-const ChatList = ({ className }: ClassName) => {
-  const { data: chatsData } = useQuery<Chat[]>('/chats');
+type ChatListProps = {
+  chatsData?: Chat[];
+  selectedChatId?: string;
+  onSelectChat: (chatId?: string) => void;
+};
 
+const ChatList = ({
+  chatsData,
+  selectedChatId,
+  onSelectChat,
+  className,
+}: PropsWithClassName<ChatListProps>) => {
   const onClickNewButton = () => {
-    // TODO: 우측 채팅내역 초기화 및 현재 선택된 채팅 비활성화
+    onSelectChat(undefined);
   };
 
-  const onClickChatItem = () => {
-    // TODO: 채팅 선택 로직
+  const onClickChatItem = (chatId: string) => {
+    onSelectChat(chatId);
   };
 
   return (
@@ -71,7 +79,11 @@ const ChatList = ({ className }: ClassName) => {
       <ChatListWrapper>
         {chatsData?.map((item) => {
           return (
-            <ChatItem key={item.chat_id} $isSelected={false} onClick={onClickChatItem}>
+            <ChatItem
+              key={item.chat_id}
+              $isSelected={item.chat_id === selectedChatId}
+              onClick={() => onClickChatItem(item.chat_id)}
+            >
               <ChatFirstQuestion>{item.dialogues[0].completion}</ChatFirstQuestion>
               <ChatModelName>{item.chat_model_name}</ChatModelName>
             </ChatItem>

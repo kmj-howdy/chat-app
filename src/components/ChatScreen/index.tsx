@@ -30,9 +30,10 @@ const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
 
 type ChatScreenProps = {
   chatId: string;
+  chatModel: Partial<ChatModels>;
 };
 
-const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) => {
+const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScreenProps>) => {
   const { data: initialChatContent } = useQuery<Chat>(`/chats/${chatId}`, {
     deps: [chatId],
   });

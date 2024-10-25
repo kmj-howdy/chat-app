@@ -27,21 +27,27 @@ const Main = () => {
 
   const { data: chatsData } = useQuery<Chat[]>('/chats');
 
-  const [selectedChatId, setSelectedChatId] = useState<string>();
+  const [selectedChat, setSelectedChat] = useState<Chat>();
 
-  const handleSelectChat = (chatId?: string) => {
-    setSelectedChatId(chatId);
+  const handleSelectChat = (chat?: Chat) => {
+    setSelectedChat(chat);
   };
 
   return (
     <Container>
       <StyledChatList
         chatsData={chatsData}
-        selectedChatId={selectedChatId}
+        selectedChat={selectedChat}
         onSelectChat={handleSelectChat}
       />
       {/* TODO: 새로운 채팅화면 */}
-      <StyledChatScreen chatId={selectedChatId ?? '1'} />
+      <StyledChatScreen
+        chatId={selectedChat?.chat_id ?? '1'}
+        chatModel={{
+          chat_model_id: selectedChat?.chat_model_id,
+          chat_model_name: selectedChat?.chat_model_name,
+        }}
+      />
     </Container>
   );
 };

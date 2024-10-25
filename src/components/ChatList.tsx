@@ -53,13 +53,13 @@ const ChatModelName = styled.span`
 
 type ChatListProps = {
   chatsData?: Chat[];
-  selectedChatId?: string;
-  onSelectChat: (chatId?: string) => void;
+  selectedChat?: Chat;
+  onSelectChat: (chatId?: Chat) => void;
 };
 
 const ChatList = ({
   chatsData,
-  selectedChatId,
+  selectedChat,
   onSelectChat,
   className,
 }: PropsWithClassName<ChatListProps>) => {
@@ -67,8 +67,8 @@ const ChatList = ({
     onSelectChat(undefined);
   };
 
-  const onClickChatItem = (chatId: string) => {
-    onSelectChat(chatId);
+  const onClickChatItem = (chat: Chat) => {
+    onSelectChat(chat);
   };
 
   return (
@@ -81,8 +81,8 @@ const ChatList = ({
           return (
             <ChatItem
               key={item.chat_id}
-              $isSelected={item.chat_id === selectedChatId}
-              onClick={() => onClickChatItem(item.chat_id)}
+              $isSelected={item.chat_id === selectedChat?.chat_id}
+              onClick={() => onClickChatItem(item)}
             >
               <ChatFirstQuestion>{item.dialogues[0].completion}</ChatFirstQuestion>
               <ChatModelName>{item.chat_model_name}</ChatModelName>

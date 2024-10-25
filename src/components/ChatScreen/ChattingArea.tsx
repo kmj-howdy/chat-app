@@ -28,12 +28,11 @@ const ChattingArea = ({
   onUpdateSelectedChat,
 }: ChattingAreaProps) => {
   const [value, setValue] = useState('');
+
   const [chatContent, setChatContent] = useState<Chat | null>(selectedChat || null);
 
   useEffect(() => {
-    if (selectedChat) {
-      setChatContent(selectedChat);
-    }
+    setChatContent(selectedChat || null);
   }, [selectedChat]);
 
   const onSubmit: MouseEventHandler = async (e) => {
@@ -41,41 +40,32 @@ const ChattingArea = ({
 
     if (!value.trim()) return;
 
+    const userDialogue: Dialogue = {
+      dialogue_id: uuidv4(),
+      prompt: value,
+      completion: '',
+    };
+
     if (chatId) {
       // 기존 채팅
-      const userDialogueId = uuidv4();
-      const userDialogue: Dialogue = {
-        dialogue_id: userDialogueId,
-        prompt: value,
-        completion: '',
-      };
-
       setChatContent((prevContent) =>
         prevContent
           ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
           : null,
       );
-
-      updateChatContent({ chatId, userDialogueId, value });
+      updateChatContent({ chatId, value });
     } else {
       // 새로운 채팅 (채팅 및 대화 생성)
       const createdChatData = await createChat();
       if (createdChatData) {
-        const userDialogueId = uuidv4();
-        const newDialogue: Dialogue = {
-          dialogue_id: userDialogueId,
-          prompt: value,
-          completion: '',
-        };
         const updatedChat: Chat = {
           ...createdChatData,
-          dialogues: [newDialogue],
+          dialogues: [userDialogue],
         };
         onUpdateSelectedChat(updatedChat);
 
         await updateChatContent({
           chatId: createdChatData.chat_id,
-          userDialogueId,
           value,
         });
       }
@@ -97,32 +87,12 @@ const ChattingArea = ({
     }
   };
 
-  const updateChatContent = async ({
-    chatId,
-    userDialogueId,
-    value,
-  }: {
-    chatId: string;
-    userDialogueId: string;
-    value: string;
-  }) => {
+  const updateChatContent = async ({ chatId, value }: { chatId: string; value: string }) => {
     try {
       const updatedChats = await request.post<Chat>(`/chats/${chatId}/dialogues`, {
         body: JSON.stringify({ prompt: value }),
       });
-
-      setChatContent((prevContent) =>
-        prevContent
-          ? {
-              ...prevContent,
-              dialogues: prevContent.dialogues.map((dialogue) =>
-                dialogue.dialogue_id === userDialogueId
-                  ? { ...dialogue, completion: updatedChats.dialogues.slice(-1)[0].completion }
-                  : dialogue,
-              ),
-            }
-          : null,
-      );
+      onUpdateSelectedChat(updatedChats);
     } catch (error) {
       console.error(error);
     }

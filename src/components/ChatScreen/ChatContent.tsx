@@ -40,11 +40,14 @@ const AiMessage = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 `;
 
-const GoDownButton = styled.button`
+const GoDownButton = styled.button<{ $showGoDownButton: boolean }>`
   position: sticky;
   left: 50%;
-  bottom: 2rem;
+  bottom: 1.5rem;
   transform: translateX(-50%);
+  visibility: ${(p) => (p.$showGoDownButton ? 'visible' : 'hidden')};
+  opacity: ${(p) => (p.$showGoDownButton ? 1 : 0)};
+  pointer-events: ${(p) => (p.$showGoDownButton ? 'auto' : 'none')};
 `;
 
 type ChatContentProps = {
@@ -81,7 +84,9 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
           </Fragment>
         );
       })}
-      {showGoDownButton && <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>}
+      <GoDownButton onClick={onScrollBottom} $showGoDownButton={showGoDownButton}>
+        아래
+      </GoDownButton>
     </ChatWrapper>
   );
 };

@@ -3,6 +3,7 @@
 import { delay, http, HttpResponse } from 'msw';
 import { v4 as uuidv4 } from 'uuid';
 import { CHAT_MODELS, CHATS } from './data';
+import { ChatModelId, ChatModelName } from '@/types/chat';
 
 let chatData = CHATS;
 const chatModels = CHAT_MODELS;
@@ -27,10 +28,9 @@ export const handlers = [
     const { chat_model_id } = await request.json();
 
     chatData.push({
-      chat_model_id: chat_model_id,
-      chat_model_name:
-        chatModels.find(({ chat_model_id: modelId }) => chat_model_id === modelId)
-          ?.chat_model_name || '',
+      chat_model_id: chat_model_id as ChatModelId,
+      chat_model_name: (chatModels.find(({ chat_model_id: modelId }) => chat_model_id === modelId)
+        ?.chat_model_name || '') as ChatModelName,
       chat_id: uuidv4(),
       dialogues: [],
     });

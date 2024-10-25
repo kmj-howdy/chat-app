@@ -2,8 +2,8 @@ import ChatScreen from '@/components/ChatScreen';
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import useQuery from '@/hooks/useQuery';
-import { Chat } from '@/types/chat';
-import { useState } from 'react';
+import { Chat, ChatModels } from '@/types/chat';
+import { useEffect, useState } from 'react';
 
 const Container = styled.main`
   display: flex;
@@ -23,14 +23,52 @@ const StyledChatScreen = styled(ChatScreen)`
 `;
 
 const Main = () => {
-  // TODO: initial 데이터 수정 필요
+  const { data: initialChatsData } = useQuery<Chat[]>('/chats');
+  const { data: chatModels, isLoading: isChatModelsLoading } =
+    useQuery<ChatModels[]>('/chat_model');
 
-  const { data: chatsData } = useQuery<Chat[]>('/chats');
-
+  const [chatsData, setChatsData] = useState<Chat[]>();
   const [selectedChat, setSelectedChat] = useState<Chat>();
+  const [selectedChatModelId, setSelectedChatModelId] = useState<string>('');
 
-  const handleSelectChat = (chat?: Chat) => {
+  useEffect(() => {
+    if (initialChatsData) {
+      setChatsData(initialChatsData);
+    }
+  }, [initialChatsData]);
+
+  useEffect(() => {
+    if (chatModels && chatModels.length > 0) {
+      setSelectedChatModelId(chatModels[0].chat_model_id);
+    }
+  }, [chatModels]);
+
+  const updateSelectedChat = (chat?: Chat) => {
     setSelectedChat(chat);
+
+    setChatsData((prevChats) => {
+      const existingChatIndex = prevChats?.findIndex((c) => c.chat_id === chat?.chat_id);
+      if (existingChatIndex && existingChatIndex !== -1) {
+        const updatedChats = [...(prevChats || [])];
+        if (chat) {
+          updatedChats[existingChatIndex] = chat;
+        }
+        return updatedChats;
+      } else {
+        if (chat) {
+          if (prevChats?.find((prevChat) => prevChat.chat_id === chat.chat_id)) {
+            return prevChats;
+          }
+          return [...(prevChats || []), chat];
+        }
+        return [...(prevChats || [])];
+      }
+    });
+  };
+
+  const handleSelectModelChange = (modelId: string) => {
+    setSelectedChatModelId(modelId);
+    setSelectedChat(undefined);
   };
 
   return (
@@ -38,12 +76,15 @@ const Main = () => {
       <StyledChatList
         chatsData={chatsData}
         selectedChat={selectedChat}
-        onSelectChat={handleSelectChat}
+        onSelectChat={updateSelectedChat}
       />
-      {/* TODO: 새로운 채팅화면 */}
       <StyledChatScreen
-        chatId={selectedChat?.chat_id ?? '1'}
-        chatModel={selectedChat?.chat_model_id ?? ''}
+        selectedChat={selectedChat}
+        onUpdateSelectedChat={updateSelectedChat}
+        chatModel={selectedChatModelId}
+        isLoading={isChatModelsLoading}
+        onModelChange={handleSelectModelChange}
+        chatModels={chatModels}
       />
     </Container>
   );

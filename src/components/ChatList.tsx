@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import { ClassName } from '@/types/style';
-import { useEffect, useState } from 'react';
-import request from '@/utils/request';
 import { Chat } from '@/types/chat';
+import useQuery from '@/hooks/useQuery';
 
 const Container = styled.div`
   display: flex;
@@ -54,19 +53,7 @@ const ChatModelName = styled.span`
 `;
 
 const ChatList = ({ className }: ClassName) => {
-  const [chatsData, setChatsData] = useState<Chat[]>([]);
-
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const result = await request.get<Chat[]>('/chats');
-        setChatsData(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchChats();
-  }, []);
+  const { data: chatsData } = useQuery<Chat[]>('/chats');
 
   const onClickNewButton = () => {
     // TODO: 우측 채팅내역 초기화 및 현재 선택된 채팅 비활성화

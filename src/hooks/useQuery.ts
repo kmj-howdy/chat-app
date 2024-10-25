@@ -7,7 +7,7 @@ type UseQueryOptions = {
 };
 
 type UseQueryResult<SuccessResponse> = {
-  data: SuccessResponse | null;
+  data: SuccessResponse | undefined;
   error: Error | null;
   isLoading: boolean;
 };
@@ -16,7 +16,7 @@ function useQuery<SuccessResponse>(
   url: string,
   { options, deps = [] }: UseQueryOptions = {},
 ): UseQueryResult<SuccessResponse> {
-  const [data, setData] = useState<SuccessResponse | null>(null);
+  const [data, setData] = useState<SuccessResponse>();
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 

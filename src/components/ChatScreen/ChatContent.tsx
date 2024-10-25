@@ -1,5 +1,5 @@
 import { Chat } from '@/types/chat';
-import { Fragment } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const ChatWrapper = styled.div`
@@ -40,7 +40,7 @@ const AiMessage = styled.div`
 `;
 
 const GoDownButton = styled.button`
-  position: absolute;
+  position: sticky;
   left: 50%;
   bottom: 2rem;
   transform: translateX(-50%);
@@ -51,12 +51,27 @@ type ChatContentProps = {
 };
 
 const ChatContent = ({ chatContent }: ChatContentProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [showGoDownButton, setShowGoDownButton] = useState(false);
+
+  const onScroll = () => {
+    if (!ref.current) return;
+    const { clientHeight, scrollHeight, scrollTop } = ref.current;
+
+    const isAtBottom = clientHeight + scrollTop + 30 > scrollHeight;
+    setShowGoDownButton(!isAtBottom);
+  };
+
   const onScrollBottom = () => {
-    // TODO: 최하단으로 스크롤 구현
+    if (ref.current) {
+      ref.current.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' });
+      setShowGoDownButton(false);
+    }
   };
 
   return (
-    <ChatWrapper>
+    <ChatWrapper ref={ref} onScroll={onScroll}>
       {chatContent?.dialogues.map((dialogue) => {
         return (
           <Fragment key={dialogue.dialogue_id}>
@@ -65,7 +80,7 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
           </Fragment>
         );
       })}
-      <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>
+      {showGoDownButton && <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>}
     </ChatWrapper>
   );
 };

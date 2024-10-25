@@ -1,12 +1,12 @@
 import { PropsWithClassName } from '@/types/style';
 import styled from 'styled-components';
-import { Chat, Dialogue } from '@/types/chat';
+import { Chat, ChatModels, Dialogue } from '@/types/chat';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import useQuery from '@/hooks/useQuery';
 import { v4 as uuidv4 } from 'uuid';
 import request from '@/utils/request';
 import ChatContent from './ChatContent';
-import ChatModelSelectBox from './ChatModelSelectBox';
+import ChatModelSelectBox, { convertChatModelsToOptions } from './ChatModelSelectBox';
 
 const Container = styled.div`
   padding: 2rem;
@@ -30,6 +30,8 @@ const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScr
   const { data: initialChatContent } = useQuery<Chat>(`/chats/${chatId}`, {
     deps: [chatId],
   });
+  const { data: chatModels, isLoading: isChatModelsLoading } =
+    useQuery<ChatModels[]>('/chat_model');
 
   const [selectedChatModel, setSelectedChatModel] = useState(chatModel);
   const [chatContent, setChatContent] = useState<Chat | null>(null);
@@ -40,6 +42,12 @@ const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScr
       setChatContent(initialChatContent);
     }
   }, [initialChatContent]);
+
+  useEffect(() => {
+    if (chatModels && chatModels.length > 0) {
+      setSelectedChatModel(chatModels[0].chat_model_id);
+    }
+  }, [chatModels]);
 
   const handleSelectChange = (value: string) => {
     setSelectedChatModel(value);
@@ -96,17 +104,25 @@ const ChatScreen = ({ className, chatId, chatModel }: PropsWithClassName<ChatScr
 
   return (
     <Container className={className}>
-      <ChatModelSelectBox value={selectedChatModel} onChange={handleSelectChange} />
+      {isChatModelsLoading && <p>모델 목록 불러오는 중...</p>}
+      {chatModels && (
+        <ChatModelSelectBox
+          options={convertChatModelsToOptions(chatModels)}
+          value={selectedChatModel}
+          onChange={handleSelectChange}
+        />
+      )}
       <ChatContent key={chatId} chatContent={chatContent} />
       <InputWrapper>
         <StyledTextarea
           rows={3}
+          disabled={!selectedChatModel}
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
           }}
         />
-        <button onClick={onSubmit} disabled={!value}>
+        <button onClick={onSubmit} disabled={!value || !selectedChatModel}>
           제출
         </button>
       </InputWrapper>

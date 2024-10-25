@@ -1,10 +1,10 @@
-import { ClassName } from '@/types/style';
+import { PropsWithClassName } from '@/types/style';
 
 import styled, { css } from 'styled-components';
 import SelectBox, { SelectOption } from './common/SelectBox';
-import { ChatModels } from '@/types/chat';
-import { CHAT_MODELS, CHATS } from '@/mock/data';
-import { MouseEventHandler } from 'react';
+import { Chat, ChatModels } from '@/types/chat';
+import { MouseEventHandler, useEffect, useState } from 'react';
+import request from '@/utils/request';
 
 const Container = styled.div`
   padding: 2rem;
@@ -69,11 +69,37 @@ const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
   }));
 };
 
-const Chat = ({ className }: ClassName) => {
-  // TODO: 모델 불러오기
-  const chatModels = CHAT_MODELS;
-  // TODO: 대화내역 불러오기
-  const chatContent = CHATS[0];
+type ChatUIProps = {
+  chatId: string;
+};
+
+const ChatUI = ({ className, chatId }: PropsWithClassName<ChatUIProps>) => {
+  const [chatContent, setChatContent] = useState<Chat>();
+  const [chatModels, setChatModels] = useState<ChatModels[]>([]);
+
+  useEffect(() => {
+    const fetchChatModels = async () => {
+      try {
+        const result = await request.get<ChatModels[]>('/chat_model');
+        setChatModels(result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchChatModels();
+  }, []);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const result = await request.get<Chat>(`/chats/${chatId}`);
+        setChatContent(result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchChats();
+  }, [chatId]);
 
   const handleSelectChange = (value: string) => {
     // TODO: 값 업데이트
@@ -97,7 +123,7 @@ const Chat = ({ className }: ClassName) => {
         onChange={handleSelectChange}
       />
       <ChatWrapper>
-        {chatContent.dialogues.map((dialogue) => {
+        {chatContent?.dialogues.map((dialogue) => {
           // TODO: 대화 주체 분기처리
           return <UserMessage>{dialogue.completion}</UserMessage>;
         })}
@@ -111,4 +137,4 @@ const Chat = ({ className }: ClassName) => {
   );
 };
 
-export default Chat;
+export default ChatUI;

@@ -23,7 +23,8 @@ const Main = () => {
   return (
     <Container>
       <StyledChatList />
-      <StyledChat />
+      {/* TODO: chatId 수정 */}
+      <StyledChat chatId="1" />
     </Container>
   );
 };

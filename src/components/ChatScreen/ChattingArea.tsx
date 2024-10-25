@@ -4,6 +4,7 @@ import ChatContent from './ChatContent';
 import { useState, MouseEventHandler, useEffect, useRef } from 'react';
 import request from '@/utils/request';
 import { Chat, Dialogue } from '@/types/chat';
+import { updateChatContent } from '@/apis/chatting';
 
 const InputWrapper = styled.div`
   display: flex;
@@ -61,7 +62,10 @@ const ChattingArea = ({
             ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
             : null,
         );
-        await updateChatContent({ chatId, value: savedValue });
+        const updatedChats = await updateChatContent({ chatId, value: savedValue });
+        if (updatedChats) {
+          onUpdateSelectedChat(updatedChats);
+        }
       } else {
         // 새로운 채팅 (채팅 및 대화 생성)
         const createdChatData = await createChat();
@@ -71,11 +75,13 @@ const ChattingArea = ({
             dialogues: [userDialogue],
           };
           onUpdateSelectedChat(updatedChat);
-
-          await updateChatContent({
+          const updatedChats = await updateChatContent({
             chatId: createdChatData.chat_id,
             value: savedValue,
           });
+          if (updatedChats) {
+            onUpdateSelectedChat(updatedChats);
+          }
         }
       }
     } finally {
@@ -91,17 +97,6 @@ const ChattingArea = ({
         }),
       });
       return createdChat[createdChat.length - 1];
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const updateChatContent = async ({ chatId, value }: { chatId: string; value: string }) => {
-    try {
-      const updatedChats = await request.post<Chat>(`/chats/${chatId}/dialogues`, {
-        body: JSON.stringify({ prompt: value }),
-      });
-      onUpdateSelectedChat(updatedChats);
     } catch (error) {
       console.error(error);
     }

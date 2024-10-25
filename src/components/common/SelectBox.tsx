@@ -9,7 +9,7 @@ type SelectBoxProps = {
 };
 
 const SelectBox = ({ options, onChange, placeholder }: SelectBoxProps) => {
-  const [selectedValue, setSelectedValue] = useState<string>();
+  const [selectedValue, setSelectedValue] = useState<string>('');
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -20,7 +20,7 @@ const SelectBox = ({ options, onChange, placeholder }: SelectBoxProps) => {
   return (
     <select value={selectedValue} onChange={handleChange}>
       {placeholder && (
-        <option value="" disabled selected hidden>
+        <option value="" disabled hidden>
           {placeholder}
         </option>
       )}

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import styled from 'styled-components';
 import ChatContent from './ChatContent';
-import { useState, MouseEventHandler, useEffect } from 'react';
+import { useState, MouseEventHandler, useEffect, useRef } from 'react';
 import request from '@/utils/request';
 import { Chat, Dialogue } from '@/types/chat';
 
@@ -30,6 +30,7 @@ const ChattingArea = ({
   const [value, setValue] = useState('');
 
   const [chatContent, setChatContent] = useState<Chat | null>(selectedChat || null);
+  const isCreatingRef = useRef(false);
 
   useEffect(() => {
     setChatContent(selectedChat || null);
@@ -38,40 +39,48 @@ const ChattingArea = ({
   const onSubmit: MouseEventHandler = async (e) => {
     e.preventDefault();
 
+    if (isCreatingRef.current) return;
     if (!value.trim()) return;
 
-    const userDialogue: Dialogue = {
-      dialogue_id: uuidv4(),
-      prompt: value,
-      completion: '',
-    };
+    try {
+      isCreatingRef.current = true;
 
-    if (chatId) {
-      // 기존 채팅
-      setChatContent((prevContent) =>
-        prevContent
-          ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
-          : null,
-      );
-      updateChatContent({ chatId, value });
-    } else {
-      // 새로운 채팅 (채팅 및 대화 생성)
-      const createdChatData = await createChat();
-      if (createdChatData) {
-        const updatedChat: Chat = {
-          ...createdChatData,
-          dialogues: [userDialogue],
-        };
-        onUpdateSelectedChat(updatedChat);
+      const savedValue = value;
+      setValue('');
 
-        await updateChatContent({
-          chatId: createdChatData.chat_id,
-          value,
-        });
+      const userDialogue: Dialogue = {
+        dialogue_id: uuidv4(),
+        prompt: savedValue,
+        completion: '',
+      };
+
+      if (chatId) {
+        // 기존 채팅
+        setChatContent((prevContent) =>
+          prevContent
+            ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
+            : null,
+        );
+        await updateChatContent({ chatId, value: savedValue });
+      } else {
+        // 새로운 채팅 (채팅 및 대화 생성)
+        const createdChatData = await createChat();
+        if (createdChatData) {
+          const updatedChat: Chat = {
+            ...createdChatData,
+            dialogues: [userDialogue],
+          };
+          onUpdateSelectedChat(updatedChat);
+
+          await updateChatContent({
+            chatId: createdChatData.chat_id,
+            value: savedValue,
+          });
+        }
       }
+    } finally {
+      isCreatingRef.current = false;
     }
-
-    setValue('');
   };
 
   const createChat = async () => {
@@ -108,7 +117,10 @@ const ChattingArea = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
-        <button onClick={onSubmit} disabled={!value || !selectedChatModelId}>
+        <button
+          onClick={onSubmit}
+          disabled={!value || !selectedChatModelId || isCreatingRef.current}
+        >
           제출
         </button>
       </InputWrapper>

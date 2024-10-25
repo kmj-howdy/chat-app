@@ -1,11 +1,9 @@
-import { PropsWithClassName } from '@/types';
+import { ClassName } from '@/types/style';
 import styled from 'styled-components';
 
 const Container = styled.div``;
 
-type ChatProps = {};
-
-const Chat = ({ className }: PropsWithClassName<ChatProps>) => {
+const Chat = ({ className }: ClassName) => {
   return <Container className={className}>Chat</Container>;
 };
 

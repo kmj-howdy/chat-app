@@ -1,5 +1,6 @@
 import { Chat } from '@/types/chat';
-import { Fragment } from 'react';
+import throttle from '@/utils/throttle';
+import { Fragment, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const ChatWrapper = styled.div`
@@ -39,11 +40,14 @@ const AiMessage = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 `;
 
-const GoDownButton = styled.button`
-  position: absolute;
+const GoDownButton = styled.button<{ $showGoDownButton: boolean }>`
+  position: sticky;
   left: 50%;
-  bottom: 2rem;
+  bottom: 1.5rem;
   transform: translateX(-50%);
+  visibility: ${(p) => (p.$showGoDownButton ? 'visible' : 'hidden')};
+  opacity: ${(p) => (p.$showGoDownButton ? 1 : 0)};
+  pointer-events: ${(p) => (p.$showGoDownButton ? 'auto' : 'none')};
 `;
 
 type ChatContentProps = {
@@ -51,12 +55,27 @@ type ChatContentProps = {
 };
 
 const ChatContent = ({ chatContent }: ChatContentProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [showGoDownButton, setShowGoDownButton] = useState(false);
+
+  const onScroll = throttle(() => {
+    if (!ref.current) return;
+    const { clientHeight, scrollHeight, scrollTop } = ref.current;
+
+    const isAtBottom = clientHeight + scrollTop + 50 > scrollHeight;
+    setShowGoDownButton(!isAtBottom);
+  }, 200);
+
   const onScrollBottom = () => {
-    // TODO: 최하단으로 스크롤 구현
+    if (ref.current) {
+      ref.current.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' });
+      setShowGoDownButton(false);
+    }
   };
 
   return (
-    <ChatWrapper>
+    <ChatWrapper ref={ref} onScroll={onScroll}>
       {chatContent?.dialogues.map((dialogue) => {
         return (
           <Fragment key={dialogue.dialogue_id}>
@@ -65,7 +84,9 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
           </Fragment>
         );
       })}
-      <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>
+      <GoDownButton onClick={onScrollBottom} $showGoDownButton={showGoDownButton}>
+        아래
+      </GoDownButton>
     </ChatWrapper>
   );
 };

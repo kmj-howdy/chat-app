@@ -1,4 +1,5 @@
 import { Chat } from '@/types/chat';
+import throttle from '@/utils/throttle';
 import { Fragment, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -55,13 +56,13 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
 
   const [showGoDownButton, setShowGoDownButton] = useState(false);
 
-  const onScroll = () => {
+  const onScroll = throttle(() => {
     if (!ref.current) return;
     const { clientHeight, scrollHeight, scrollTop } = ref.current;
 
-    const isAtBottom = clientHeight + scrollTop + 30 > scrollHeight;
+    const isAtBottom = clientHeight + scrollTop + 50 > scrollHeight;
     setShowGoDownButton(!isAtBottom);
-  };
+  }, 200);
 
   const onScrollBottom = () => {
     if (ref.current) {

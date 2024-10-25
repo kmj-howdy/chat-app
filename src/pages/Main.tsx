@@ -1,6 +1,9 @@
 import ChatScreen from '@/components/ChatScreen';
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
+import useQuery from '@/hooks/useQuery';
+import { Chat } from '@/types/chat';
+import { useState } from 'react';
 
 const Container = styled.main`
   display: flex;
@@ -20,11 +23,25 @@ const StyledChatScreen = styled(ChatScreen)`
 `;
 
 const Main = () => {
+  // TODO: initial 데이터 수정 필요
+
+  const { data: chatsData } = useQuery<Chat[]>('/chats');
+
+  const [selectedChatId, setSelectedChatId] = useState<string>();
+
+  const handleSelectChat = (chatId?: string) => {
+    setSelectedChatId(chatId);
+  };
+
   return (
     <Container>
-      <StyledChatList />
-      {/* TODO: chatId 수정 */}
-      <StyledChatScreen chatId="1" />
+      <StyledChatList
+        chatsData={chatsData}
+        selectedChatId={selectedChatId}
+        onSelectChat={handleSelectChat}
+      />
+      {/* TODO: 새로운 채팅화면 */}
+      <StyledChatScreen chatId={selectedChatId ?? '1'} />
     </Container>
   );
 };

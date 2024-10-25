@@ -1,9 +1,9 @@
 import ChatScreen from '@/components/ChatScreen';
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
-import useQuery from '@/hooks/useQuery';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
+import request from '@/utils/request';
 
 const Container = styled.main`
   display: flex;
@@ -23,25 +23,38 @@ const StyledChatScreen = styled(ChatScreen)`
 `;
 
 const Main = () => {
-  const { data: initialChatsData } = useQuery<Chat[]>('/chats');
-  const { data: chatModels, isLoading: isChatModelsLoading } =
-    useQuery<ChatModels[]>('/chat_model');
-
   const [chatsData, setChatsData] = useState<Chat[]>();
+  const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [selectedChat, setSelectedChat] = useState<Chat>();
   const [selectedChatModelId, setSelectedChatModelId] = useState<string>('');
 
-  useEffect(() => {
-    if (initialChatsData) {
-      setChatsData(initialChatsData);
-    }
-  }, [initialChatsData]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (chatModels && chatModels.length > 0) {
-      setSelectedChatModelId(chatModels[0].chat_model_id);
-    }
-  }, [chatModels]);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const [fetchedChats, fetchedChatModels] = await Promise.all([
+          request.get<Chat[]>('/chats'),
+          request.get<ChatModels[]>('/chat_model'),
+        ]);
+
+        setChatsData(fetchedChats);
+        setChatModels(fetchedChatModels);
+
+        if (fetchedChatModels && fetchedChatModels.length > 0) {
+          setSelectedChatModelId(fetchedChatModels[0].chat_model_id);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const updateSelectedChat = (chat?: Chat) => {
     setSelectedChat(chat);
@@ -88,7 +101,7 @@ const Main = () => {
         selectedChat={selectedChat}
         onUpdateSelectedChat={updateSelectedChat}
         chatModel={selectedChatModelId}
-        isLoading={isChatModelsLoading}
+        isLoading={isLoading}
         onModelChange={handleSelectModelChange}
         chatModels={chatModels}
       />

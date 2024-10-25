@@ -3,7 +3,7 @@ import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import request from '@/utils/request';
+import { fetchChatsAndModels } from '@/apis/chats';
 
 const Container = styled.main`
   display: flex;
@@ -35,16 +35,14 @@ const Main = () => {
       try {
         setIsLoading(true);
 
-        const [fetchedChats, fetchedChatModels] = await Promise.all([
-          request.get<Chat[]>('/chats'),
-          request.get<ChatModels[]>('/chat_model'),
-        ]);
+        const result = await fetchChatsAndModels();
+        if (result) {
+          setChatsData(result.chatsData);
+          setChatModels(result.chatModels);
 
-        setChatsData(fetchedChats);
-        setChatModels(fetchedChatModels);
-
-        if (fetchedChatModels && fetchedChatModels.length > 0) {
-          setSelectedChatModelId(fetchedChatModels[0].chat_model_id);
+          if (result.chatModels && result.chatModels.length > 0) {
+            setSelectedChatModelId(result.chatModels[0].chat_model_id);
+          }
         }
       } catch (error) {
         console.error(error);

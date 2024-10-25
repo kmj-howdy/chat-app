@@ -1,10 +1,11 @@
 import { PropsWithClassName } from '@/types/style';
-
 import styled, { css } from 'styled-components';
 import SelectBox, { SelectOption } from '../common/SelectBox';
-import { Chat, ChatModels } from '@/types/chat';
-import { MouseEventHandler } from 'react';
+import { Chat, ChatModels, Dialogue } from '@/types/chat';
+import { Fragment, MouseEventHandler, useEffect, useState } from 'react';
 import useQuery from '@/hooks/useQuery';
+import { v4 as uuidv4 } from 'uuid';
+import request from '@/utils/request';
 
 const Container = styled.div`
   padding: 2rem;
@@ -38,6 +39,7 @@ const UserMessage = styled.div`
   margin: 1rem 0 0 auto;
   border-radius: 1.125rem 1.125rem 0 1.125rem;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  background-color: ${(p) => p.theme.colors.secondary};
 `;
 
 const AiMessage = styled.div`
@@ -74,10 +76,19 @@ type ChatScreenProps = {
 };
 
 const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) => {
-  const { data: chatContent } = useQuery<Chat>(`/chats/${chatId}`, {
+  const { data: initialChatContent } = useQuery<Chat>(`/chats/${chatId}`, {
     deps: [chatId],
   });
   const { data: chatModels } = useQuery<ChatModels[]>('/chat_model');
+
+  const [localChatContent, setLocalChatContent] = useState<Chat | null>(null);
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (initialChatContent) {
+      setLocalChatContent(initialChatContent);
+    }
+  }, [initialChatContent]);
 
   const handleSelectChange = (value: string) => {
     // TODO: 값 업데이트
@@ -90,7 +101,51 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
 
   const onSubmit: MouseEventHandler = (e) => {
     e.preventDefault();
-    // TODO: api 연동
+
+    if (!value.trim()) return;
+
+    const userDialogueId = uuidv4();
+    const userDialogue: Dialogue = {
+      dialogue_id: userDialogueId,
+      prompt: value,
+      completion: '',
+    };
+    setLocalChatContent((prevContent) =>
+      prevContent ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] } : null,
+    );
+
+    updateChatContent({ userDialogueId: userDialogueId, value });
+
+    setValue('');
+  };
+
+  const updateChatContent = async ({
+    userDialogueId,
+    value,
+  }: {
+    userDialogueId: string;
+    value: string;
+  }) => {
+    try {
+      const updatedChat = await request.post<Chat>(`/chats/${chatId}/dialogues`, {
+        body: JSON.stringify({ prompt: value }),
+      });
+
+      setLocalChatContent((prevContent) =>
+        prevContent
+          ? {
+              ...prevContent,
+              dialogues: prevContent.dialogues.map((dialogue) =>
+                dialogue.dialogue_id === userDialogueId
+                  ? { ...dialogue, completion: updatedChat.dialogues.slice(-1)[0].completion }
+                  : dialogue,
+              ),
+            }
+          : null,
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -103,15 +158,27 @@ const ChatScreen = ({ className, chatId }: PropsWithClassName<ChatScreenProps>) 
         />
       )}
       <ChatWrapper>
-        {chatContent?.dialogues.map((dialogue) => {
-          // TODO: 대화 주체 분기처리
-          return <UserMessage>{dialogue.completion}</UserMessage>;
+        {localChatContent?.dialogues.map((dialogue) => {
+          return (
+            <Fragment key={dialogue.dialogue_id}>
+              <UserMessage>{dialogue.prompt}</UserMessage>
+              <AiMessage>{dialogue.completion || '입력중...'}</AiMessage>
+            </Fragment>
+          );
         })}
         <GoDownButton onClick={onScrollBottom}>아래</GoDownButton>
       </ChatWrapper>
       <InputWrapper>
-        <StyledTextarea rows={3} />
-        <button onClick={onSubmit}>제출</button>
+        <StyledTextarea
+          rows={3}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+        />
+        <button onClick={onSubmit} disabled={!value}>
+          제출
+        </button>
       </InputWrapper>
     </Container>
   );

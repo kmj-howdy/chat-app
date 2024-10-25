@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import styled from 'styled-components';
 import ChatContent from './ChatContent';
-import { useState, MouseEventHandler, useEffect } from 'react';
-import request from '@/utils/request';
+import { useState, MouseEventHandler, useEffect, useRef } from 'react';
 import { Chat, Dialogue } from '@/types/chat';
+import { createChat, updateChatContent } from '@/apis/chatting';
 
 const InputWrapper = styled.div`
   display: flex;
@@ -30,6 +30,7 @@ const ChattingArea = ({
   const [value, setValue] = useState('');
 
   const [chatContent, setChatContent] = useState<Chat | null>(selectedChat || null);
+  const isCreatingRef = useRef(false);
 
   useEffect(() => {
     setChatContent(selectedChat || null);
@@ -38,63 +39,52 @@ const ChattingArea = ({
   const onSubmit: MouseEventHandler = async (e) => {
     e.preventDefault();
 
+    if (isCreatingRef.current) return;
     if (!value.trim()) return;
 
-    const userDialogue: Dialogue = {
-      dialogue_id: uuidv4(),
-      prompt: value,
-      completion: '',
-    };
+    try {
+      isCreatingRef.current = true;
 
-    if (chatId) {
-      // 기존 채팅
-      setChatContent((prevContent) =>
-        prevContent
-          ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
-          : null,
-      );
-      updateChatContent({ chatId, value });
-    } else {
-      // 새로운 채팅 (채팅 및 대화 생성)
-      const createdChatData = await createChat();
-      if (createdChatData) {
-        const updatedChat: Chat = {
-          ...createdChatData,
-          dialogues: [userDialogue],
-        };
-        onUpdateSelectedChat(updatedChat);
+      const savedValue = value;
+      setValue('');
 
-        await updateChatContent({
-          chatId: createdChatData.chat_id,
-          value,
-        });
+      const userDialogue: Dialogue = {
+        dialogue_id: uuidv4(),
+        prompt: savedValue,
+        completion: '',
+      };
+
+      if (chatId) {
+        // 기존 채팅
+        setChatContent((prevContent) =>
+          prevContent
+            ? { ...prevContent, dialogues: [...prevContent.dialogues, userDialogue] }
+            : null,
+        );
+        const updatedChats = await updateChatContent({ chatId, value: savedValue });
+        if (updatedChats) {
+          onUpdateSelectedChat(updatedChats);
+        }
+      } else {
+        // 새로운 채팅 (채팅 및 대화 생성)
+        const createdChatData = await createChat({ selectedChatModelId });
+        if (createdChatData) {
+          const updatedChat: Chat = {
+            ...createdChatData,
+            dialogues: [userDialogue],
+          };
+          onUpdateSelectedChat(updatedChat);
+          const updatedChats = await updateChatContent({
+            chatId: createdChatData.chat_id,
+            value: savedValue,
+          });
+          if (updatedChats) {
+            onUpdateSelectedChat(updatedChats);
+          }
+        }
       }
-    }
-
-    setValue('');
-  };
-
-  const createChat = async () => {
-    try {
-      const createdChat = await request.post<Chat[]>('/chats', {
-        body: JSON.stringify({
-          chat_model_id: selectedChatModelId,
-        }),
-      });
-      return createdChat[createdChat.length - 1];
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const updateChatContent = async ({ chatId, value }: { chatId: string; value: string }) => {
-    try {
-      const updatedChats = await request.post<Chat>(`/chats/${chatId}/dialogues`, {
-        body: JSON.stringify({ prompt: value }),
-      });
-      onUpdateSelectedChat(updatedChats);
-    } catch (error) {
-      console.error(error);
+    } finally {
+      isCreatingRef.current = false;
     }
   };
 
@@ -108,7 +98,10 @@ const ChattingArea = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
-        <button onClick={onSubmit} disabled={!value || !selectedChatModelId}>
+        <button
+          onClick={onSubmit}
+          disabled={!value || !selectedChatModelId || isCreatingRef.current}
+        >
           제출
         </button>
       </InputWrapper>

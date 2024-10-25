@@ -16,8 +16,9 @@ class Request {
       throw new Error('네트워크 에러가 발생했습니다');
     }
 
-    const response = (await res.json()) as SuccessResponse;
-    return response;
+    const response = await res.json();
+    const responseData = response.data as SuccessResponse;
+    return responseData;
   }
 
   get<SuccessResponse = never>(api: string, options?: RequestInit) {

@@ -1,3 +1,4 @@
+import { PropsWithClassName } from '@/types/style';
 import { ChangeEvent } from 'react';
 
 export type SelectOption = { value: string; label: string };
@@ -9,13 +10,19 @@ export type SelectBoxProps = {
   placeholder?: string;
 };
 
-const SelectBox = ({ options, value = '', onChange, placeholder }: SelectBoxProps) => {
+const SelectBox = ({
+  options,
+  value = '',
+  onChange,
+  placeholder,
+  className,
+}: PropsWithClassName<SelectBoxProps>) => {
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value);
   };
 
   return (
-    <select value={value} onChange={handleChange}>
+    <select value={value} onChange={handleChange} className={className}>
       {placeholder && (
         <option value="" disabled hidden>
           {placeholder}

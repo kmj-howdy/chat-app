@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { fetchChatModels } from '@/apis/chatModels';
 import ChattingArea from './ChattingArea';
-import ChatModelSelectBox, {
-  convertChatModelsToOptions,
-} from '../common/chatScreen/ChatModelSelectBox';
+import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import Skeleton from '../common/Skeleton';
+import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
 
 const Container = styled.div`
   display: flex;

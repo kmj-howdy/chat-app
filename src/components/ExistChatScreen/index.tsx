@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { Chat, ChatModelId, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import ChatModelSelectBox, {
-  convertChatModelsToOptions,
-} from '../common/chatScreen/ChatModelSelectBox';
+import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import ChattingArea from './ChattingArea';
 import {
   useLoaderData,
@@ -15,6 +13,7 @@ import {
 import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
 import Skeleton from '../common/Skeleton';
+import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
 
 const Container = styled.div`
   display: flex;

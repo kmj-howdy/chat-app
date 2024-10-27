@@ -3,11 +3,10 @@ import { useState, MouseEventHandler, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Chat, Dialogue } from '@/types/chat';
 import { createChat, updateChatContent } from '@/apis/chatting';
-import { chatMessageStyle } from '../common/chatScreen/chat.style';
+import { UserMessage } from '../common/chatScreen/chat.style';
 
 const ChatContentWrapper = styled.div`
   position: relative;
-  overflow-y: auto;
   border: 1px solid grey;
   height: 90%;
   padding: 1rem;
@@ -17,14 +16,6 @@ const ChatContentWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const UserMessage = styled.div`
-  ${chatMessageStyle};
-  margin: 1rem 0 0 auto;
-  border-radius: 1.125rem 1.125rem 0 1.125rem;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  background-color: ${(p) => p.theme.colors.secondary};
 `;
 
 const InputWrapper = styled.div`

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { PropsWithClassName } from '@/types/style';
 import { Chat } from '@/types/chat';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Skeleton from './common/Skeleton';
 
 const Container = styled.div`
   display: flex;
@@ -55,9 +56,10 @@ const ChatModelName = styled.span<{ $isSelected: boolean }>`
 
 type ChatListProps = {
   chatsData?: Chat[];
+  isLoading: boolean;
 };
 
-const ChatList = ({ chatsData, className }: PropsWithClassName<ChatListProps>) => {
+const ChatList = ({ isLoading, chatsData, className }: PropsWithClassName<ChatListProps>) => {
   const navigate = useNavigate();
   const { chatId } = useParams();
 
@@ -71,15 +73,23 @@ const ChatList = ({ chatsData, className }: PropsWithClassName<ChatListProps>) =
         <CrateChatButton onClick={handleClickNewButton}>New</CrateChatButton>
       </ButtonWrapper>
       <ChatListWrapper>
-        {chatsData?.map((item) => {
-          const isSelected = item.chat_id === chatId;
-          return (
-            <ChatItem key={item.chat_id} to={`/chats/${item.chat_id}`} $isSelected={isSelected}>
-              <ChatFirstQuestion>{item.dialogues[0].prompt}</ChatFirstQuestion>
-              <ChatModelName $isSelected={isSelected}>{item.chat_model_name}</ChatModelName>
-            </ChatItem>
-          );
-        })}
+        {isLoading ? (
+          <>
+            <Skeleton height="4rem" />
+            <Skeleton height="4rem" />
+            <Skeleton height="4rem" />
+          </>
+        ) : (
+          chatsData?.map((item) => {
+            const isSelected = item.chat_id === chatId;
+            return (
+              <ChatItem key={item.chat_id} to={`/chats/${item.chat_id}`} $isSelected={isSelected}>
+                <ChatFirstQuestion>{item.dialogues[0].prompt}</ChatFirstQuestion>
+                <ChatModelName $isSelected={isSelected}>{item.chat_model_name}</ChatModelName>
+              </ChatItem>
+            );
+          })
+        )}
       </ChatListWrapper>
     </Container>
   );

@@ -1,5 +1,5 @@
 import { ChatModels } from '@/types/chat';
-import SelectBox, { SelectBoxProps, SelectOption } from '../common/SelectBox';
+import SelectBox, { SelectBoxProps, SelectOption } from '../SelectBox';
 
 export const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
   return models.map((model) => ({

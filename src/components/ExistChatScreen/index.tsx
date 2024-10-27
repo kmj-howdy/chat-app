@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import ChatModelSelectBox, { convertChatModelsToOptions } from '../ChatScreen/ChatModelSelectBox';
+import ChatModelSelectBox, {
+  convertChatModelsToOptions,
+} from '../common/chatScreen/ChatModelSelectBox';
 import ChattingArea from './ChattingArea';
 import {
   useLoaderData,

@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchChatModels } from '@/apis/chatModels';
 import ChattingArea from './ChattingArea';
-import ChatModelSelectBox, { convertChatModelsToOptions } from '../ChatScreen/ChatModelSelectBox';
+import ChatModelSelectBox, {
+  convertChatModelsToOptions,
+} from '../common/chatScreen/ChatModelSelectBox';
 
 const Container = styled.div`
   padding: 2rem;

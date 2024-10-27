@@ -1,8 +1,9 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useState, MouseEventHandler, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Chat, Dialogue } from '@/types/chat';
 import { createChat, updateChatContent } from '@/apis/chatting';
+import { chatMessageStyle } from '../common/chatScreen/chat.style';
 
 const ChatContentWrapper = styled.div`
   position: relative;
@@ -16,15 +17,6 @@ const ChatContentWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const chatMessageStyle = css`
-  box-sizing: border-box;
-  padding: 0.5rem 1rem;
-  border-radius: 1.125rem 1.125rem 1.125rem 0;
-  min-height: 2.25rem;
-  width: fit-content;
-  max-width: 66%;
 `;
 
 const UserMessage = styled.div`

@@ -1,7 +1,8 @@
 import { Chat } from '@/types/chat';
 import throttle from '@/utils/throttle';
 import { Fragment, useRef, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { chatMessageStyle } from '../common/chatScreen/chat.style';
 
 const ChatWrapper = styled.div`
   position: relative;
@@ -15,15 +16,6 @@ const ChatWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const chatMessageStyle = css`
-  box-sizing: border-box;
-  padding: 0.5rem 1rem;
-  border-radius: 1.125rem 1.125rem 1.125rem 0;
-  min-height: 2.25rem;
-  width: fit-content;
-  max-width: 66%;
 `;
 
 const UserMessage = styled.div`

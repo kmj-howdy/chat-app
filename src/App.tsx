@@ -1,7 +1,7 @@
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle from '@/styles/GlobalStyle';
 import theme from '@/styles/theme';
-import CustomRoutes from './CustomRoutes';
+import CustomRoutes from '@/routes/CustomRoutes';
 
 function App() {
   return (

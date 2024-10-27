@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { useState, MouseEventHandler, useRef } from 'react';
+import { useState, MouseEventHandler, useRef, Fragment } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Chat, Dialogue } from '@/types/chat';
 import { createChat, updateChatContent } from '@/apis/chatting';
-import { UserMessage } from '../common/chatScreen/chat.style';
+import { AiMessage, UserMessage } from '../common/chatScreen/chat.style';
 
 const ChatContentWrapper = styled.div`
   flex: 1;
@@ -79,7 +79,12 @@ const ChattingArea = ({ selectedChatModelId, onUpdateSelectedChat }: ChattingAre
     <>
       <ChatContentWrapper>
         {chatContent?.map((dialogue) => {
-          return <UserMessage key={dialogue.dialogue_id}>{dialogue.prompt}</UserMessage>;
+          return (
+            <Fragment key={dialogue.dialogue_id}>
+              <UserMessage key={dialogue.dialogue_id}>{dialogue.prompt}</UserMessage>
+              <AiMessage>입력중...</AiMessage>
+            </Fragment>
+          );
         })}
       </ChatContentWrapper>
       <InputWrapper>

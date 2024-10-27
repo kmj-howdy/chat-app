@@ -3,7 +3,8 @@ import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import { fetchChats, fetchChatsAndModels } from '@/apis/chats';
+import { fetchChats } from '@/apis/chats';
+import { fetchChatModels } from '@/apis/chatModels';
 
 const Container = styled.main`
   display: flex;
@@ -44,19 +45,13 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const updateChatModels = async () => {
       try {
         setIsLoading(true);
 
-        const result = await fetchChatsAndModels();
-        if (result) {
-          setChatsData(result.chatsData);
-          setChatModels(result.chatModels);
-
-          if (result.chatModels && result.chatModels.length > 0) {
-            setSelectedChatModelId(result.chatModels[0].chat_model_id);
-          }
-        }
+        const chatModels = await fetchChatModels();
+        setChatModels(chatModels);
+        setSelectedChatModelId(chatModels[0].chat_model_id);
       } catch (error) {
         console.error(error);
       } finally {
@@ -64,7 +59,7 @@ const Main = () => {
       }
     };
 
-    fetchData();
+    updateChatModels();
   }, []);
 
   const updateSelectedChat = (chat?: Chat) => {

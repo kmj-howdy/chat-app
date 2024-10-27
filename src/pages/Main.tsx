@@ -23,7 +23,7 @@ const ChatScreenWrapper = styled.div`
 
 const Main = () => {
   const location = useLocation();
-  const selectedChatModelId = location.state?.selectedChatModelId ?? '';
+  const currentChatModelId = location.state?.currentChatModelId ?? '';
 
   const [chatsData, setChatsData] = useState<Chat[]>();
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +52,7 @@ const Main = () => {
     <Container>
       <StyledChatList chatsData={chatsData} isLoading={isLoading} />
       <ChatScreenWrapper>
-        <Outlet context={{ selectedChatModelId, onUpdateChatList: handleUpdateChatList }} />
+        <Outlet context={{ currentChatModelId, onUpdateChatList: handleUpdateChatList }} />
       </ChatScreenWrapper>
     </Container>
   );

@@ -34,7 +34,7 @@ const ExistChatScreen = () => {
 
   const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const selectedChatModelId = location.state?.selectedChatModelId ?? _chat.chat_model_id ?? '';
+  const currentChatModelId = location.state?.currentChatModelId ?? _chat.chat_model_id ?? '';
 
   useEffect(() => {
     const updateChatList = async () => {
@@ -76,7 +76,7 @@ const ExistChatScreen = () => {
 
   const handleSelectChange = (value: string) => {
     navigate(`/chats`, {
-      state: { selectedChatModelId: value },
+      state: { currentChatModelId: value },
     });
   };
 
@@ -92,7 +92,7 @@ const ExistChatScreen = () => {
         chatModels && (
           <ChatModelSelectBox
             options={convertChatModelsToOptions(chatModels)}
-            value={selectedChatModelId}
+            value={currentChatModelId}
             onChange={handleSelectChange}
           />
         )

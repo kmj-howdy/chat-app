@@ -28,11 +28,11 @@ const StyledTextarea = styled.textarea`
 `;
 
 export type ChattingAreaProps = {
-  selectedChatModelId: string;
+  currentChatModelId: string;
   onUpdateSelectedChat: (chat: Chat) => void;
 };
 
-const ChattingArea = ({ selectedChatModelId, onUpdateSelectedChat }: ChattingAreaProps) => {
+const ChattingArea = ({ currentChatModelId, onUpdateSelectedChat }: ChattingAreaProps) => {
   const [value, setValue] = useState('');
 
   const [chatContent, setChatContent] = useState<Dialogue[]>();
@@ -58,7 +58,7 @@ const ChattingArea = ({ selectedChatModelId, onUpdateSelectedChat }: ChattingAre
       ]);
       setValue('');
 
-      const createdChatData = await createChat({ selectedChatModelId });
+      const createdChatData = await createChat({ chatModelId: currentChatModelId });
       if (createdChatData) {
         const updatedChats = await updateChatContent({
           chatId: createdChatData.chat_id,
@@ -90,13 +90,13 @@ const ChattingArea = ({ selectedChatModelId, onUpdateSelectedChat }: ChattingAre
       <InputWrapper>
         <StyledTextarea
           rows={3}
-          disabled={!selectedChatModelId}
+          disabled={!currentChatModelId}
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
         <button
           onClick={onSubmit}
-          disabled={!value || !selectedChatModelId || isCreatingRef.current}
+          disabled={!value || !currentChatModelId || isCreatingRef.current}
         >
           제출
         </button>

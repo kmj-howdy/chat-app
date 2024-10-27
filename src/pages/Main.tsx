@@ -1,10 +1,10 @@
-import ChatScreen from '@/components/ChatScreen';
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
 import { fetchChatModels } from '@/apis/chatModels';
+import { Outlet } from 'react-router-dom';
 
 const Container = styled.main`
   display: flex;
@@ -18,7 +18,7 @@ const StyledChatList = styled(ChatList)`
   border: 1px solid red;
 `;
 
-const StyledChatScreen = styled(ChatScreen)`
+const ChatScreenWrapper = styled.div`
   min-width: 70%;
   border: 1px solid blue;
 `;
@@ -90,17 +90,16 @@ const Main = () => {
     setSelectedChat(undefined);
   };
 
+  const handleUpdateChatList = (chatList: Chat[]) => {
+    setChatsData(chatList);
+  };
+
   return (
     <Container>
       <StyledChatList chatsData={chatsData} />
-      <StyledChatScreen
-        selectedChat={selectedChat}
-        onUpdateSelectedChat={updateSelectedChat}
-        chatModel={selectedChatModelId}
-        isLoading={isLoading}
-        onModelChange={handleSelectModelChange}
-        chatModels={chatModels}
-      />
+      <ChatScreenWrapper>
+        <Outlet context={{ onUpdateChatList: handleUpdateChatList }} />
+      </ChatScreenWrapper>
     </Container>
   );
 };

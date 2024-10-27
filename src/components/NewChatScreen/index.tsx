@@ -8,6 +8,7 @@ import ChattingArea from './ChattingArea';
 import ChatModelSelectBox, {
   convertChatModelsToOptions,
 } from '../common/chatScreen/ChatModelSelectBox';
+import Skeleton from '../common/Skeleton';
 
 const Container = styled.div`
   display: flex;
@@ -52,7 +53,7 @@ const NewChatScreen = () => {
   return (
     <Container>
       {isLoading ? (
-        <p>모델 목록 불러오는 중...</p>
+        <Skeleton width="130px" />
       ) : (
         chatModels && (
           <ChatModelSelectBox

@@ -14,6 +14,7 @@ import {
 } from 'react-router-dom';
 import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
+import Skeleton from '../common/Skeleton';
 
 const Container = styled.div`
   display: flex;
@@ -86,7 +87,7 @@ const ExistChatScreen = () => {
   return (
     <Container>
       {isLoading ? (
-        <p>모델 목록 불러오는 중...</p>
+        <Skeleton width="130px" />
       ) : (
         chatModels && (
           <ChatModelSelectBox

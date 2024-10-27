@@ -26,14 +26,18 @@ const Main = () => {
   const selectedChatModelId = location.state?.selectedChatModelId ?? '';
 
   const [chatsData, setChatsData] = useState<Chat[]>();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const updateChatsData = async () => {
+      setIsLoading(true);
       try {
         const chatsData = await fetchChats();
         setChatsData(chatsData);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -46,7 +50,7 @@ const Main = () => {
 
   return (
     <Container>
-      <StyledChatList chatsData={chatsData} />
+      <StyledChatList chatsData={chatsData} isLoading={isLoading} />
       <ChatScreenWrapper>
         <Outlet context={{ selectedChatModelId, onUpdateChatList: handleUpdateChatList }} />
       </ChatScreenWrapper>

@@ -1,5 +1,6 @@
 import { ChatModels } from '@/types/chat';
-import SelectBox, { SelectBoxProps, SelectOption } from '../common/SelectBox';
+import SelectBox, { SelectBoxProps, SelectOption } from '../SelectBox';
+import styled from 'styled-components';
 
 export const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
   return models.map((model) => ({
@@ -7,6 +8,11 @@ export const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[]
     label: model.chat_model_name,
   }));
 };
+
+const StyledSelectBox = styled(SelectBox)`
+  width: max-content;
+  margin-bottom: 0.5rem;
+`;
 
 type ChatModelSelectBoxProps = {
   value?: string;
@@ -16,7 +22,7 @@ type ChatModelSelectBoxProps = {
 
 const ChatModelSelectBox = ({ options, value, onChange }: ChatModelSelectBoxProps) => {
   return (
-    <SelectBox
+    <StyledSelectBox
       options={options}
       value={value}
       onChange={onChange}

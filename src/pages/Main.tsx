@@ -7,19 +7,18 @@ import { Outlet } from 'react-router-dom';
 
 const Container = styled.main`
   display: flex;
-  width: 100vw;
+  flex-direction: row;
   height: 100vh;
-  border: 1px solid green;
+  width: 100vw;
 `;
 
 const StyledChatList = styled(ChatList)`
-  min-width: 30%;
-  border: 1px solid red;
+  flex: 1 0 30%;
+  border-right: 1px solid black;
 `;
 
 const ChatScreenWrapper = styled.div`
-  min-width: 70%;
-  border: 1px solid blue;
+  flex: 1 0 70%;
 `;
 
 const Main = () => {

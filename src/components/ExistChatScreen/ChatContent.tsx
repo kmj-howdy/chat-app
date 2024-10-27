@@ -1,13 +1,14 @@
 import { Chat } from '@/types/chat';
 import throttle from '@/utils/throttle';
 import { Fragment, useRef, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { chatMessageStyle, UserMessage } from '../common/chatScreen/chat.style';
 
 const ChatWrapper = styled.div`
+  flex: 1;
   position: relative;
   overflow-y: auto;
   border: 1px solid grey;
-  height: 90%;
   padding: 1rem;
 
   -ms-overflow-style: none;
@@ -15,23 +16,6 @@ const ChatWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
-`;
-
-const chatMessageStyle = css`
-  box-sizing: border-box;
-  padding: 0.5rem 1rem;
-  border-radius: 1.125rem 1.125rem 1.125rem 0;
-  min-height: 2.25rem;
-  width: fit-content;
-  max-width: 66%;
-`;
-
-const UserMessage = styled.div`
-  ${chatMessageStyle};
-  margin: 1rem 0 0 auto;
-  border-radius: 1.125rem 1.125rem 0 1.125rem;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  background-color: ${(p) => p.theme.colors.secondary};
 `;
 
 const AiMessage = styled.div`

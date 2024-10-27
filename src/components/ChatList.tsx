@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { PropsWithClassName } from '@/types/style';
 import { Chat } from '@/types/chat';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -27,7 +28,7 @@ const ChatListWrapper = styled.div`
   }
 `;
 
-const ChatItem = styled.div<{ $isSelected: boolean }>`
+const ChatItem = styled(Link)<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
 
@@ -53,34 +54,28 @@ const ChatModelName = styled.span`
 
 type ChatListProps = {
   chatsData?: Chat[];
-  selectedChat?: Chat;
-  onSelectChat: (chatId?: Chat) => void;
-  onClickNewButton: () => void;
 };
 
-const ChatList = ({
-  chatsData,
-  selectedChat,
-  onSelectChat,
-  onClickNewButton,
-  className,
-}: PropsWithClassName<ChatListProps>) => {
-  const onClickChatItem = (chat: Chat) => {
-    onSelectChat(chat);
+const ChatList = ({ chatsData, className }: PropsWithClassName<ChatListProps>) => {
+  const navigate = useNavigate();
+  const { chatId } = useParams();
+
+  const handleClickNewButton = () => {
+    navigate('/chats');
   };
 
   return (
     <Container className={className}>
       <ButtonWrapper>
-        <CrateChatButton onClick={onClickNewButton}>New</CrateChatButton>
+        <CrateChatButton onClick={handleClickNewButton}>New</CrateChatButton>
       </ButtonWrapper>
       <ChatListWrapper>
         {chatsData?.map((item) => {
           return (
             <ChatItem
               key={item.chat_id}
-              $isSelected={item.chat_id === selectedChat?.chat_id}
-              onClick={() => onClickChatItem(item)}
+              to={`/chats/${item.chat_id}`}
+              $isSelected={item.chat_id === chatId}
             >
               <ChatFirstQuestion>{item.dialogues[0].prompt}</ChatFirstQuestion>
               <ChatModelName>{item.chat_model_name}</ChatModelName>

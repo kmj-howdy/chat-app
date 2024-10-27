@@ -1,9 +1,8 @@
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
-import { Chat, ChatModels } from '@/types/chat';
+import { Chat } from '@/types/chat';
 import { useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
-import { fetchChatModels } from '@/apis/chatModels';
 import { Outlet } from 'react-router-dom';
 
 const Container = styled.main`
@@ -25,11 +24,6 @@ const ChatScreenWrapper = styled.div`
 
 const Main = () => {
   const [chatsData, setChatsData] = useState<Chat[]>();
-  const [chatModels, setChatModels] = useState<ChatModels[]>();
-  const [selectedChat, setSelectedChat] = useState<Chat>();
-  const [selectedChatModelId, setSelectedChatModelId] = useState<string>('');
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const updateChatsData = async () => {
@@ -43,52 +37,6 @@ const Main = () => {
 
     updateChatsData();
   }, []);
-
-  useEffect(() => {
-    const updateChatModels = async () => {
-      try {
-        setIsLoading(true);
-
-        const chatModels = await fetchChatModels();
-        setChatModels(chatModels);
-        setSelectedChatModelId(chatModels[0].chat_model_id);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    updateChatModels();
-  }, []);
-
-  const updateSelectedChat = (chat?: Chat) => {
-    setSelectedChat(chat);
-
-    setChatsData((prevChats) => {
-      const existingChatIndex = prevChats?.findIndex((c) => c.chat_id === chat?.chat_id);
-      if (existingChatIndex && existingChatIndex !== -1) {
-        const updatedChats = [...(prevChats || [])];
-        if (chat) {
-          updatedChats[existingChatIndex] = chat;
-        }
-        return updatedChats;
-      } else {
-        if (chat) {
-          if (prevChats?.find((prevChat) => prevChat.chat_id === chat.chat_id)) {
-            return prevChats;
-          }
-          return [...(prevChats || []), chat];
-        }
-        return [...(prevChats || [])];
-      }
-    });
-  };
-
-  const handleSelectModelChange = (modelId: string) => {
-    setSelectedChatModelId(modelId);
-    setSelectedChat(undefined);
-  };
 
   const handleUpdateChatList = (chatList: Chat[]) => {
     setChatsData(chatList);

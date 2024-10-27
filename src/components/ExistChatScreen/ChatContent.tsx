@@ -1,6 +1,6 @@
 import { Chat } from '@/types/chat';
 import throttle from '@/utils/throttle';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { chatMessageStyle, UserMessage } from '../common/chatScreen/chat.style';
 
@@ -43,6 +43,10 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
 
   const [showGoDownButton, setShowGoDownButton] = useState(false);
 
+  useEffect(() => {
+    onScrollBottom('instant');
+  }, [chatContent.dialogues.length]);
+
   const onScroll = throttle(() => {
     if (!ref.current) return;
     const { clientHeight, scrollHeight, scrollTop } = ref.current;
@@ -51,9 +55,9 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
     setShowGoDownButton(!isAtBottom);
   }, 200);
 
-  const onScrollBottom = () => {
+  const onScrollBottom = (scrollBehavior: ScrollBehavior = 'smooth') => {
     if (ref.current) {
-      ref.current.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' });
+      ref.current.scrollTo({ top: ref.current.scrollHeight, behavior: scrollBehavior });
       setShowGoDownButton(false);
     }
   };
@@ -68,7 +72,7 @@ const ChatContent = ({ chatContent }: ChatContentProps) => {
           </Fragment>
         );
       })}
-      <GoDownButton onClick={onScrollBottom} $showGoDownButton={showGoDownButton}>
+      <GoDownButton onClick={() => onScrollBottom()} $showGoDownButton={showGoDownButton}>
         아래
       </GoDownButton>
     </ChatWrapper>

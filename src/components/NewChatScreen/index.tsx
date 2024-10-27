@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ChatModels } from '@/types/chat';
+import { ChatModelId, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
 
 import { useNavigate, useOutletContext } from 'react-router-dom';
@@ -20,10 +20,10 @@ const Container = styled.div`
 const NewChatScreen = () => {
   const navigate = useNavigate();
   const { currentChatModelId: _currentChatModelId } = useOutletContext<{
-    currentChatModelId: string;
+    currentChatModelId: ChatModelId;
   }>();
 
-  const [currentChatModelId, setCurrentChatModelId] = useState<string>(_currentChatModelId);
+  const [currentChatModelId, setCurrentChatModelId] = useState<ChatModelId>(_currentChatModelId);
 
   const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +47,7 @@ const NewChatScreen = () => {
   }, [currentChatModelId]);
 
   const handleSelectChange = (value: string) => {
-    setCurrentChatModelId(value);
+    setCurrentChatModelId(value as ChatModelId);
   };
 
   return (

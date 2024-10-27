@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Chat, ChatModels } from '@/types/chat';
+import { Chat, ChatModelId, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
 import ChatModelSelectBox, {
   convertChatModelsToOptions,
@@ -34,7 +34,7 @@ const ExistChatScreen = () => {
 
   const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const currentChatModelId = location.state?.currentChatModelId ?? _chat.chat_model_id ?? '';
+  const currentChatModelId: ChatModelId = location.state?.currentChatModelId ?? _chat.chat_model_id;
 
   useEffect(() => {
     const updateChatList = async () => {

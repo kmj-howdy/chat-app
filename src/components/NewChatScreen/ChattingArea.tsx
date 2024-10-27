@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState, MouseEventHandler, useRef, Fragment } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Chat, Dialogue } from '@/types/chat';
+import { Chat, ChatModelId, Dialogue } from '@/types/chat';
 import { createChat, updateChatContent } from '@/apis/chatting';
 import { AiMessage, UserMessage } from '../common/chatScreen/chat.style';
 
@@ -28,7 +28,7 @@ const StyledTextarea = styled.textarea`
 `;
 
 export type ChattingAreaProps = {
-  currentChatModelId: string;
+  currentChatModelId: ChatModelId;
   onUpdateSelectedChat: (chat: Chat) => void;
 };
 

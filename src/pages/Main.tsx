@@ -1,6 +1,6 @@
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
-import { Chat } from '@/types/chat';
+import { Chat, ChatModelId } from '@/types/chat';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -23,7 +23,7 @@ const ChatScreenWrapper = styled.div`
 
 const Main = () => {
   const location = useLocation();
-  const currentChatModelId = location.state?.currentChatModelId ?? '';
+  const currentChatModelId: ChatModelId = location.state?.currentChatModelId;
 
   const [chatsData, setChatsData] = useState<Chat[]>();
   const [isLoading, setIsLoading] = useState(true);

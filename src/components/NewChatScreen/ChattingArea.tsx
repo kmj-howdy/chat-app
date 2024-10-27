@@ -68,6 +68,8 @@ const ChattingArea = ({ selectedChatModelId, onUpdateSelectedChat }: ChattingAre
           onUpdateSelectedChat(updatedChats);
         }
       }
+    } catch (err) {
+      console.error(err);
     } finally {
       isCreatingRef.current = false;
     }

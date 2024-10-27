@@ -20,3 +20,8 @@ export const fetchChatsAndModels: FetchChatsAndModelsFunc = async () => {
     console.error(error);
   }
 };
+
+export const fetchChats = async () => {
+  const result = await request.get<Chat[]>('/chats');
+  return result;
+};

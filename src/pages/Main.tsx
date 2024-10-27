@@ -3,7 +3,7 @@ import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import { fetchChatsAndModels } from '@/apis/chats';
+import { fetchChats, fetchChatsAndModels } from '@/apis/chats';
 
 const Container = styled.main`
   display: flex;
@@ -29,6 +29,19 @@ const Main = () => {
   const [selectedChatModelId, setSelectedChatModelId] = useState<string>('');
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const updateChatsData = async () => {
+      try {
+        const chatsData = await fetchChats();
+        setChatsData(chatsData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    updateChatsData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,11 +90,6 @@ const Main = () => {
     });
   };
 
-  const handleNewChat = () => {
-    setSelectedChat(undefined);
-    setSelectedChatModelId(chatModels?.[0].chat_model_id ?? '');
-  };
-
   const handleSelectModelChange = (modelId: string) => {
     setSelectedChatModelId(modelId);
     setSelectedChat(undefined);
@@ -89,12 +97,7 @@ const Main = () => {
 
   return (
     <Container>
-      <StyledChatList
-        chatsData={chatsData}
-        selectedChat={selectedChat}
-        onSelectChat={updateSelectedChat}
-        onClickNewButton={handleNewChat}
-      />
+      <StyledChatList chatsData={chatsData} />
       <StyledChatScreen
         selectedChat={selectedChat}
         onUpdateSelectedChat={updateSelectedChat}

@@ -35,6 +35,7 @@ const ChatItem = styled(Link)<{ $isSelected: boolean }>`
   padding: 0.5rem;
   border: 1px solid blue;
   background-color: ${(p) => p.$isSelected && p.theme.colors.main};
+  color: ${(p) => p.$isSelected && 'white'};
   cursor: pointer;
   &:hover {
     background-color: ${(p) => p.theme.colors.secondary};
@@ -45,11 +46,11 @@ const ChatFirstQuestion = styled.p`
   margin-bottom: 0.5rem;
 `;
 
-const ChatModelName = styled.span`
+const ChatModelName = styled.span<{ $isSelected: boolean }>`
   display: flex;
   justify-content: flex-end;
   font-size: 10px;
-  color: gray;
+  color: ${(p) => (p.$isSelected ? 'white' : 'grey')};
 `;
 
 type ChatListProps = {
@@ -71,14 +72,11 @@ const ChatList = ({ chatsData, className }: PropsWithClassName<ChatListProps>) =
       </ButtonWrapper>
       <ChatListWrapper>
         {chatsData?.map((item) => {
+          const isSelected = item.chat_id === chatId;
           return (
-            <ChatItem
-              key={item.chat_id}
-              to={`/chats/${item.chat_id}`}
-              $isSelected={item.chat_id === chatId}
-            >
+            <ChatItem key={item.chat_id} to={`/chats/${item.chat_id}`} $isSelected={isSelected}>
               <ChatFirstQuestion>{item.dialogues[0].prompt}</ChatFirstQuestion>
-              <ChatModelName>{item.chat_model_name}</ChatModelName>
+              <ChatModelName $isSelected={isSelected}>{item.chat_model_name}</ChatModelName>
             </ChatItem>
           );
         })}

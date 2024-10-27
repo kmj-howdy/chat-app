@@ -7,6 +7,7 @@ export const chatMessageStyle = css`
   min-height: 2.25rem;
   width: fit-content;
   max-width: 66%;
+  word-break: break-all;
 `;
 
 export const UserMessage = styled.div`

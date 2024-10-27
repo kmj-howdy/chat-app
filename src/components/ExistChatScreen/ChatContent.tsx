@@ -5,10 +5,10 @@ import styled from 'styled-components';
 import { chatMessageStyle, UserMessage } from '../common/chatScreen/chat.style';
 
 const ChatWrapper = styled.div`
+  flex: 1;
   position: relative;
   overflow-y: auto;
   border: 1px solid grey;
-  height: 90%;
   padding: 1rem;
 
   -ms-overflow-style: none;

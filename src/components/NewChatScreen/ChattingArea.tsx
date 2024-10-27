@@ -6,9 +6,9 @@ import { createChat, updateChatContent } from '@/apis/chatting';
 import { UserMessage } from '../common/chatScreen/chat.style';
 
 const ChatContentWrapper = styled.div`
+  flex: 1;
   position: relative;
   border: 1px solid grey;
-  height: 90%;
   padding: 1rem;
 
   -ms-overflow-style: none;

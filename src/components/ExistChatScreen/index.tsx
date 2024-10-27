@@ -16,7 +16,10 @@ import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
+  height: 100%;
 `;
 
 const ExistChatScreen = () => {

@@ -56,6 +56,8 @@ const ChattingArea = ({ chatId, chat, onUpdateChat }: ChattingAreaProps) => {
       if (updatedChats) {
         onUpdateChat(updatedChats);
       }
+    } catch (err) {
+      console.error(err);
     } finally {
       isCreatingRef.current = false;
     }

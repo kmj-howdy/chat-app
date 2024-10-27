@@ -1,9 +1,9 @@
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat } from '@/types/chat';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const Container = styled.main`
   display: flex;
@@ -22,6 +22,9 @@ const ChatScreenWrapper = styled.div`
 `;
 
 const Main = () => {
+  const location = useLocation();
+  const selectedChatModelId = location.state?.selectedChatModelId ?? '';
+
   const [chatsData, setChatsData] = useState<Chat[]>();
 
   useEffect(() => {
@@ -37,15 +40,15 @@ const Main = () => {
     updateChatsData();
   }, []);
 
-  const handleUpdateChatList = (chatList: Chat[]) => {
+  const handleUpdateChatList = useCallback((chatList: Chat[]) => {
     setChatsData(chatList);
-  };
+  }, []);
 
   return (
     <Container>
       <StyledChatList chatsData={chatsData} />
       <ChatScreenWrapper>
-        <Outlet context={{ onUpdateChatList: handleUpdateChatList }} />
+        <Outlet context={{ selectedChatModelId, onUpdateChatList: handleUpdateChatList }} />
       </ChatScreenWrapper>
     </Container>
   );

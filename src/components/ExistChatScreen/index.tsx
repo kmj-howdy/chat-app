@@ -1,9 +1,7 @@
 import styled from 'styled-components';
-import { Chat, ChatModels } from '@/types/chat';
+import { Chat, ChatModelId, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
-import ChatModelSelectBox, {
-  convertChatModelsToOptions,
-} from '../common/chatScreen/ChatModelSelectBox';
+import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import ChattingArea from './ChattingArea';
 import {
   useLoaderData,
@@ -15,6 +13,7 @@ import {
 import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
 import Skeleton from '../common/Skeleton';
+import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
 
 const Container = styled.div`
   display: flex;
@@ -34,7 +33,7 @@ const ExistChatScreen = () => {
 
   const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const selectedChatModelId = location.state?.selectedChatModelId ?? _chat.chat_model_id ?? '';
+  const currentChatModelId: ChatModelId = location.state?.currentChatModelId ?? _chat.chat_model_id;
 
   useEffect(() => {
     const updateChatList = async () => {
@@ -76,7 +75,7 @@ const ExistChatScreen = () => {
 
   const handleSelectChange = (value: string) => {
     navigate(`/chats`, {
-      state: { selectedChatModelId: value },
+      state: { currentChatModelId: value },
     });
   };
 
@@ -92,7 +91,7 @@ const ExistChatScreen = () => {
         chatModels && (
           <ChatModelSelectBox
             options={convertChatModelsToOptions(chatModels)}
-            value={selectedChatModelId}
+            value={currentChatModelId}
             onChange={handleSelectChange}
           />
         )

@@ -1,13 +1,5 @@
-import { ChatModels } from '@/types/chat';
-import SelectBox, { SelectBoxProps, SelectOption } from '../SelectBox';
+import SelectBox, { SelectBoxProps } from '../SelectBox';
 import styled from 'styled-components';
-
-export const convertChatModelsToOptions = (models: ChatModels[]): SelectOption[] => {
-  return models.map((model) => ({
-    value: model.chat_model_id,
-    label: model.chat_model_name,
-  }));
-};
 
 const StyledSelectBox = styled(SelectBox)`
   width: max-content;

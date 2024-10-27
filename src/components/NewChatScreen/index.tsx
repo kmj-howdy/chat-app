@@ -1,14 +1,13 @@
 import styled from 'styled-components';
-import { ChatModels } from '@/types/chat';
+import { ChatModelId, ChatModels } from '@/types/chat';
 import { useEffect, useState } from 'react';
 
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { fetchChatModels } from '@/apis/chatModels';
 import ChattingArea from './ChattingArea';
-import ChatModelSelectBox, {
-  convertChatModelsToOptions,
-} from '../common/chatScreen/ChatModelSelectBox';
+import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import Skeleton from '../common/Skeleton';
+import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
 
 const Container = styled.div`
   display: flex;
@@ -19,11 +18,11 @@ const Container = styled.div`
 
 const NewChatScreen = () => {
   const navigate = useNavigate();
-  const { selectedChatModelId: _selectedChatModelId } = useOutletContext<{
-    selectedChatModelId: string;
+  const { currentChatModelId: _currentChatModelId } = useOutletContext<{
+    currentChatModelId: ChatModelId;
   }>();
 
-  const [selectedChatModelId, setSelectedChatModelId] = useState<string>(_selectedChatModelId);
+  const [currentChatModelId, setCurrentChatModelId] = useState<ChatModelId>(_currentChatModelId);
 
   const [chatModels, setChatModels] = useState<ChatModels[]>();
   const [isLoading, setIsLoading] = useState(true);
@@ -35,8 +34,8 @@ const NewChatScreen = () => {
 
         const fetchedChatModels = await fetchChatModels();
         setChatModels(fetchedChatModels);
-        if (!selectedChatModelId && fetchedChatModels.length > 0)
-          setSelectedChatModelId(fetchedChatModels[0].chat_model_id);
+        if (!currentChatModelId && fetchedChatModels.length > 0)
+          setCurrentChatModelId(fetchedChatModels[0].chat_model_id);
       } catch (err) {
         console.error(err);
       } finally {
@@ -44,10 +43,10 @@ const NewChatScreen = () => {
       }
     };
     updateChatModels();
-  }, [selectedChatModelId]);
+  }, [currentChatModelId]);
 
   const handleSelectChange = (value: string) => {
-    setSelectedChatModelId(value);
+    setCurrentChatModelId(value as ChatModelId);
   };
 
   return (
@@ -58,17 +57,17 @@ const NewChatScreen = () => {
         chatModels && (
           <ChatModelSelectBox
             options={convertChatModelsToOptions(chatModels)}
-            value={selectedChatModelId}
+            value={currentChatModelId}
             onChange={handleSelectChange}
           />
         )
       )}
 
       <ChattingArea
-        selectedChatModelId={selectedChatModelId}
+        currentChatModelId={currentChatModelId}
         onUpdateSelectedChat={async (newChat) => {
           navigate(`/chats/${newChat.chat_id}`, {
-            state: { isFromNewChat: true, selectedChatModelId },
+            state: { isFromNewChat: true, currentChatModelId },
           });
         }}
       />

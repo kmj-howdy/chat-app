@@ -47,7 +47,7 @@ const ExistChatScreen = () => {
     if (location.state?.isFromNewChat) {
       updateChatList();
     }
-  }, [location.state]);
+  }, [location.state, onUpdateChatList]);
 
   useEffect(() => {
     const updateChatModels = async () => {

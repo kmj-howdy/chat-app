@@ -1,7 +1,7 @@
 import ChatList from '@/components/ChatList';
 import styled from 'styled-components';
 import { Chat } from '@/types/chat';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
 import { Outlet, useLocation } from 'react-router-dom';
 
@@ -40,9 +40,9 @@ const Main = () => {
     updateChatsData();
   }, []);
 
-  const handleUpdateChatList = (chatList: Chat[]) => {
+  const handleUpdateChatList = useCallback((chatList: Chat[]) => {
     setChatsData(chatList);
-  };
+  }, []);
 
   return (
     <Container>

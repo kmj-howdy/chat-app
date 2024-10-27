@@ -1,14 +1,14 @@
 import { ThemeProvider } from 'styled-components';
 import GlobalStyle from '@/styles/GlobalStyle';
 import theme from '@/styles/theme';
-import Main from './pages/Main';
+import CustomRoutes from '@/routes/CustomRoutes';
 
 function App() {
   return (
     <>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
-        <Main />
+        <CustomRoutes />
       </ThemeProvider>
     </>
   );

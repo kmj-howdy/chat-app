@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Chat, ChatModelId } from '@/types/chat';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Location, Outlet, useLocation } from 'react-router-dom';
 import { ERROR } from '@/constants/errorMessages';
 
 const Container = styled.main`
@@ -22,9 +22,13 @@ const ChatScreenWrapper = styled.div`
   flex: 1 0 70%;
 `;
 
+type MainPageLocationState = {
+  currentChatModelId?: ChatModelId;
+};
+
 const Main = () => {
-  const location = useLocation();
-  const currentChatModelId: ChatModelId = location.state?.currentChatModelId;
+  const location: Location<MainPageLocationState> = useLocation();
+  const currentChatModelId = location.state?.currentChatModelId;
 
   const [chatsData, setChatsData] = useState<Chat[]>();
   const [isLoading, setIsLoading] = useState(true);

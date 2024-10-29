@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import ChattingArea from './ChattingArea';
 import {
+  Location,
   useLoaderData,
   useLocation,
   useNavigate,
@@ -23,8 +24,13 @@ const Container = styled.div`
   height: 100%;
 `;
 
+type ExistChatScreenLocationState = {
+  currentChatModelId?: ChatModelId;
+  isFromNewChat?: boolean;
+};
+
 const ExistChatScreen = () => {
-  const location = useLocation();
+  const location: Location<ExistChatScreenLocationState> = useLocation();
   const navigate = useNavigate();
   const { onUpdateChatList } = useOutletContext<{ onUpdateChatList: (chatList: Chat[]) => void }>();
   const { chatId } = useParams();

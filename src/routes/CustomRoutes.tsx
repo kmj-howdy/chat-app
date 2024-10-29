@@ -29,6 +29,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: '*',
+    loader: () => redirect('/chats'),
+  },
 ]);
 
 const CustomRoutes = () => {

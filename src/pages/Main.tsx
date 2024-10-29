@@ -4,6 +4,7 @@ import { Chat, ChatModelId } from '@/types/chat';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchChats } from '@/apis/chats';
 import { Outlet, useLocation } from 'react-router-dom';
+import { ERROR } from '@/constants/errorMessages';
 
 const Container = styled.main`
   display: flex;
@@ -36,6 +37,7 @@ const Main = () => {
         setChatsData(chatsData);
       } catch (error) {
         console.error(error);
+        alert(ERROR.COMMON);
       } finally {
         setIsLoading(false);
       }

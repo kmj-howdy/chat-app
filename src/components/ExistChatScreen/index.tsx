@@ -14,6 +14,7 @@ import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
 import Skeleton from '../common/Skeleton';
 import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
+import { ERROR } from '@/constants/errorMessages';
 
 const Container = styled.div`
   display: flex;
@@ -40,8 +41,9 @@ const ExistChatScreen = () => {
       try {
         const fetchedChatList = await fetchChats();
         onUpdateChatList(fetchedChatList);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+        alert(ERROR.COMMON);
       }
     };
     if (location.state?.isFromNewChat) {
@@ -58,6 +60,7 @@ const ExistChatScreen = () => {
         setChatModels(fetchedChatModels);
       } catch (err) {
         console.error(err);
+        alert(ERROR.COMMON);
       } finally {
         setIsLoading(false);
       }

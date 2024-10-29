@@ -4,6 +4,7 @@ import ChatContent from './ChatContent';
 import { useState, MouseEventHandler, useEffect, useRef } from 'react';
 import { Chat, Dialogue } from '@/types/chat';
 import { updateChatContent } from '@/apis/chatting';
+import { ERROR } from '@/constants/errorMessages';
 
 const InputWrapper = styled.div`
   display: flex;
@@ -58,6 +59,7 @@ const ChattingArea = ({ chatId, chat, onUpdateChat }: ChattingAreaProps) => {
       }
     } catch (err) {
       console.error(err);
+      alert(ERROR.COMMON);
     } finally {
       isCreatingRef.current = false;
     }

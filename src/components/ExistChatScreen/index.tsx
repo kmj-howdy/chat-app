@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import ChattingArea from './ChattingArea';
 import {
+  Location,
   useLoaderData,
   useLocation,
   useNavigate,
@@ -14,6 +15,7 @@ import { fetchChatModels } from '@/apis/chatModels';
 import { fetchChats } from '@/apis/chats';
 import Skeleton from '../common/Skeleton';
 import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
+import { ERROR } from '@/constants/errorMessages';
 
 const Container = styled.div`
   display: flex;
@@ -22,8 +24,13 @@ const Container = styled.div`
   height: 100%;
 `;
 
+type ExistChatScreenLocationState = {
+  currentChatModelId?: ChatModelId;
+  isFromNewChat?: boolean;
+};
+
 const ExistChatScreen = () => {
-  const location = useLocation();
+  const location: Location<ExistChatScreenLocationState> = useLocation();
   const navigate = useNavigate();
   const { onUpdateChatList } = useOutletContext<{ onUpdateChatList: (chatList: Chat[]) => void }>();
   const { chatId } = useParams();
@@ -40,8 +47,9 @@ const ExistChatScreen = () => {
       try {
         const fetchedChatList = await fetchChats();
         onUpdateChatList(fetchedChatList);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+        alert(ERROR.COMMON);
       }
     };
     if (location.state?.isFromNewChat) {
@@ -58,6 +66,7 @@ const ExistChatScreen = () => {
         setChatModels(fetchedChatModels);
       } catch (err) {
         console.error(err);
+        alert(ERROR.COMMON);
       } finally {
         setIsLoading(false);
       }

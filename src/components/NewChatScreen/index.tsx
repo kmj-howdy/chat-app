@@ -8,6 +8,7 @@ import ChattingArea from './ChattingArea';
 import ChatModelSelectBox from '../common/chatScreen/ChatModelSelectBox';
 import Skeleton from '../common/Skeleton';
 import { convertChatModelsToOptions } from '../common/chatScreen/convertChatModelsToOptions';
+import { ERROR } from '@/constants/errorMessages';
 
 const Container = styled.div`
   display: flex;
@@ -38,6 +39,7 @@ const NewChatScreen = () => {
           setCurrentChatModelId(fetchedChatModels[0].chat_model_id);
       } catch (err) {
         console.error(err);
+        alert(ERROR.COMMON);
       } finally {
         setIsLoading(false);
       }

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Chat, ChatModelId, Dialogue } from '@/types/chat';
 import { createChat, updateChatContent } from '@/apis/chatting';
 import { AiMessage, UserMessage } from '../common/chatScreen/chat.style';
+import { ERROR } from '@/constants/errorMessages';
 
 const ChatContentWrapper = styled.div`
   flex: 1;
@@ -59,17 +60,14 @@ const ChattingArea = ({ currentChatModelId, onUpdateSelectedChat }: ChattingArea
       setValue('');
 
       const createdChatData = await createChat({ chatModelId: currentChatModelId });
-      if (createdChatData) {
-        const updatedChats = await updateChatContent({
-          chatId: createdChatData.chat_id,
-          value: savedValue,
-        });
-        if (updatedChats) {
-          onUpdateSelectedChat(updatedChats);
-        }
-      }
+      const updatedChats = await updateChatContent({
+        chatId: createdChatData.chat_id,
+        value: savedValue,
+      });
+      onUpdateSelectedChat(updatedChats);
     } catch (err) {
       console.error(err);
+      alert(ERROR.COMMON);
     } finally {
       isCreatingRef.current = false;
     }

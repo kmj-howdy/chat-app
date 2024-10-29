@@ -106,7 +106,7 @@ const ExistChatScreen = () => {
         )
       )}
 
-      <ChattingArea key={chatId} chatId={chatId} chat={chat} onUpdateChat={updateSelectedChat} />
+      <ChattingArea chatId={chatId} chat={chat} onUpdateChat={updateSelectedChat} />
     </Container>
   );
 };
